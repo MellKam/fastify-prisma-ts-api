@@ -5,12 +5,16 @@
 	"author": "Artem Melnyk",
 	"license": "MIT",
 	"devDependencies": {
+		"@commitlint/cli": "^17.0.1",
+		"@commitlint/config-conventional": "^17.0.0",
 		"@types/node": "^17.0.36",
 		"@typescript-eslint/eslint-plugin": "^5.26.0",
 		"@typescript-eslint/parser": "^5.26.0",
+		"cz-conventional-changelog": "^3.3.0",
 		"eslint": "^8.16.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-prettier": "^4.0.0",
+		"husky": "^7.0.0",
 		"pino-pretty": "^7.6.1",
 		"prettier": "^2.6.2",
 		"prisma": "3.14.0",
@@ -19,13 +23,24 @@
 	},
 	"scripts": {
 		"dev": "npx tsx watch ./src/main.ts",
-		"lint": "npx prettier --write ./src && npx eslint ./src"
+		"lint": "npx prettier --write ./src && npx eslint ./src",
+		"commit": "npx cz",
+		"prepare": "husky install"
 	},
 	"dependencies": {
 		"@prisma/client": "3.14.0",
 		"env-var": "^7.1.1",
 		"fastify": "^3.29.0",
-		"fastify-plugin": "^3.0.1",
-		"fluent-json-schema": "^3.1.0"
+		"fastify-plugin": "^3.0.1"
+	},
+	"commitlint": {
+		"extends": [
+			"@commitlint/config-conventional"
+		]
+	},
+	"config": {
+		"commitizen": {
+			"path": "./node_modules/cz-conventional-changelog"
+		}
 	}
 }
