@@ -1,4 +1,5 @@
-import { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
+import { FastifyReply, FastifyRequest } from 'fastify';
+import { InternalServerError } from '../../utils/http-errors';
 import { ICreateProductReq } from './product.schema';
 import { ProductService } from './product.service';
 
@@ -9,20 +10,22 @@ export class ProductController {
 		req: FastifyRequest<{ Body: ICreateProductReq }>,
 		reply: FastifyReply,
 	) {
-		const result = await this.productService.createProduct(req.body);
+		if (!req.auth) return new InternalServerError();
 
-		const errorStatus = (result as FastifyError).statusCode;
-		if (errorStatus) {
-			reply.status(errorStatus).send(result);
+		const result = await this.productService.create(req.body, req.auth.userId);
+
+		if (result instanceof Error) {
+			return reply.send(result);
 		}
+
 		reply.status(201).send(result);
 	}
 
 	async findOne(
-		req: FastifyRequest<{ Params: { id: string } }>,
+		req: FastifyRequest<{ Params: { id: number } }>,
 		reply: FastifyReply,
 	) {
-		const result = await this.productService.findOne(+req.params.id);
+		const result = await this.productService.findOne(req.params.id);
 		reply.send(result);
 	}
 
@@ -30,12 +33,22 @@ export class ProductController {
 		req: FastifyRequest<{ Params: { id: string } }>,
 		reply: FastifyReply,
 	) {
-		const result = await this.productService.deleteOne(+req.params.id);
+		if (!req.auth) return new InternalServerError();
+
+		const result = await this.productService.deleteUserProduct(
+			+req.params.id,
+			req.auth.userId,
+		);
 		reply.send(result);
 	}
 
-	async findAll(_req: FastifyRequest, reply: FastifyReply) {
-		const result = await this.productService.findAll();
+	async findAll(
+		req: FastifyRequest<{ Querystring: { ownerId?: string } }>,
+		reply: FastifyReply,
+	) {
+		req.log.info(req.query);
+		const ownerId = req.query.ownerId ? +req.query.ownerId : undefined;
+		const result = await this.productService.findAll(ownerId);
 		reply.send(result);
 	}
 }

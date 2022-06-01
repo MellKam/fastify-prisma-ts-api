@@ -15,3 +15,8 @@ export const BadRequestError = createError(
 	'Error:',
 	400,
 );
+export const ForbiddentError = createError(
+	'FST_HTTP_FORBIDDEN_ERROR',
+	'Access forbidden for this route',
+	403,
+);

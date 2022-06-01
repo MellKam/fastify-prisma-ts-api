@@ -1,19 +1,19 @@
 import { PrismaClient } from '@prisma/client';
 import plugin from 'fastify-plugin';
 
-declare module 'fastify' {
-	export interface FastifyInstance {
-		prisma: PrismaClient;
-	}
-}
-
 export const PRISMA_PLUGIN = 'prismaPlugin';
 
 export const prismaPlugin = plugin(
 	async (fastify, _opts) => {
 		const prisma = new PrismaClient();
 
-		await prisma.$connect();
+		try {
+			await prisma.$connect();
+		} catch (error) {
+			fastify.log.error('PrismaClient cannot connect to database');
+			throw error;
+		}
+
 		fastify.decorate('prisma', prisma);
 
 		fastify.addHook('onClose', prisma.$disconnect);

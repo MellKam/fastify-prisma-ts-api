@@ -1,6 +1,6 @@
-export const DEFAULT_FILEDS_SCHEMA_ID = 'defaultFieldsSchema';
+export const DEFAULT_FILEDS_SCHEMA = 'defaultFieldsSchema';
 export const defaulFieldsSchema = {
-	$id: DEFAULT_FILEDS_SCHEMA_ID,
+	$id: DEFAULT_FILEDS_SCHEMA,
 	type: 'object',
 	properties: {
 		id: { type: 'integer' },

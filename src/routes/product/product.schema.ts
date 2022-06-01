@@ -1,7 +1,8 @@
-import { DEFAULT_FILEDS_SCHEMA_ID } from '../../utils/defautl-model-fileds';
+import { DEFAULT_FILEDS_SCHEMA } from '../../utils/defautl-model-fileds';
 
 export const CREATE_PRODUCE_REQ_SCHEMA_ID = 'createProductReqSchema';
 export const GET_PRODUCTS_RES_SCHEMA_ID = 'getProductsResSchema';
+export const GET_PRODUCTS_QUERY_SCHEMA = 'getProductsQuerySchema';
 export const PRODUCT_SCHEMA_ID = 'productSchema';
 
 const createProductReqSchema = {
@@ -11,26 +12,27 @@ const createProductReqSchema = {
 		title: { type: 'string' },
 		content: { type: 'string' },
 		price: { type: 'number' },
-		ownerId: { type: 'integer' },
-		additionalProperties: false,
 	},
-	required: ['title', 'price', 'ownerId'],
+	required: ['title', 'price'],
+	additionalProperties: false,
 };
-
-export interface ICreateProductReq {
-	title: string;
-	content: string;
-	price: number;
-	ownerId: number;
-}
 
 const productSchema = {
 	$id: PRODUCT_SCHEMA_ID,
 	type: 'object',
 	allOf: [
-		{ $ref: DEFAULT_FILEDS_SCHEMA_ID },
+		{ $ref: DEFAULT_FILEDS_SCHEMA },
 		{ $ref: CREATE_PRODUCE_REQ_SCHEMA_ID },
+		{ $ref: '#/definitions/ownerIdProperty' },
 	],
+	definitions: {
+		ownerIdProperty: {
+			properties: {
+				ownerId: { type: 'integer' },
+			},
+			required: ['ownerId'],
+		},
+	},
 	additionalProperties: false,
 };
 
@@ -40,8 +42,24 @@ const getProductsResSchema = {
 	items: { $ref: PRODUCT_SCHEMA_ID },
 };
 
+const getProductsQuerySchema = {
+	$id: GET_PRODUCTS_QUERY_SCHEMA,
+	type: 'object',
+	properties: {
+		ownerId: { type: 'integer' },
+	},
+	additionalProperties: false,
+};
+
+export interface ICreateProductReq {
+	title: string;
+	content: string;
+	price: number;
+}
+
 export const productSchemas = [
 	productSchema,
 	createProductReqSchema,
 	getProductsResSchema,
+	getProductsQuerySchema,
 ];

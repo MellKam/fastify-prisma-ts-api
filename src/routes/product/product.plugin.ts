@@ -3,12 +3,7 @@ import { ProductController } from './product.controller';
 import productRoutePlugin from './product.route';
 import { ProductService } from './product.service';
 import plugin from 'fastify-plugin';
-
-declare module 'fastify' {
-	export interface FastifyInstance {
-		productService: ProductService;
-	}
-}
+import { PRISMA_PLUGIN } from '../../plugins/prisma.plugin';
 
 const productPluginCallback: FastifyPluginCallback = (fastify, _opts, done) => {
 	const productService = new ProductService(fastify.prisma.product);
@@ -23,6 +18,8 @@ const productPluginCallback: FastifyPluginCallback = (fastify, _opts, done) => {
 	done();
 };
 
-const productPlugin = plugin(productPluginCallback, { name: 'productPlugin' });
+const productPlugin = plugin(productPluginCallback, {
+	dependencies: [PRISMA_PLUGIN],
+});
 
 export default productPlugin;

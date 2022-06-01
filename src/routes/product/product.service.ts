@@ -7,9 +7,11 @@ export class ProductService {
 		private readonly productRepository: Prisma.ProductDelegate<undefined>,
 	) {}
 
-	async createProduct(data: ICreateProductReq) {
+	async create(productData: ICreateProductReq, ownerId: number) {
 		try {
-			return await this.productRepository.create({ data });
+			return await this.productRepository.create({
+				data: { ...productData, ownerId },
+			});
 		} catch (error: any) {
 			if (error.code === 'P2003') {
 				return new ConflictError('User with this id does not exist');
@@ -18,13 +20,18 @@ export class ProductService {
 		}
 	}
 
-	async deleteOne(productId: number) {
+	async deleteUserProduct(productId: number, ownerId: number) {
 		try {
-			return await this.productRepository.delete({ where: { id: productId } });
-		} catch (error: any) {
-			if (error.code === 'P2025') {
-				return new ConflictError('Product with this id does not exist');
+			const result = await this.productRepository.deleteMany({
+				where: { AND: { id: productId, ownerId } },
+			});
+			if (!result.count) {
+				return new ConflictError(
+					`Product #${productId} do not exist or not belong to User #${ownerId}`,
+				);
 			}
+			return result;
+		} catch (error: any) {
 			return new InternalServerError(error);
 		}
 	}
@@ -44,9 +51,13 @@ export class ProductService {
 		}
 	}
 
-	async findAll() {
+	async findAll(ownerId?: number) {
 		try {
-			return await this.productRepository.findMany();
+			const where: Prisma.ProductWhereInput = {};
+
+			if (ownerId) where.ownerId = ownerId;
+
+			return await this.productRepository.findMany({ where });
 		} catch (error) {
 			return new InternalServerError(error);
 		}
