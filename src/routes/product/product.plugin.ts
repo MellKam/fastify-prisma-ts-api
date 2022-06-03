@@ -5,6 +5,12 @@ import { ProductService } from './product.service';
 import plugin from 'fastify-plugin';
 import { PRISMA_PLUGIN } from '../../plugins/prisma.plugin';
 
+declare module 'fastify' {
+	export interface FastifyInstance {
+		productService: ProductService;
+	}
+}
+
 const productPluginCallback: FastifyPluginCallback = (fastify, _opts, done) => {
 	const productService = new ProductService(fastify.prisma.product);
 	fastify.decorate('productService', productService);

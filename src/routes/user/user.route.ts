@@ -2,9 +2,9 @@ import { FastifyPluginCallback } from 'fastify';
 import authGuard from '../../plugins/auth/auth.guard';
 import { UserController } from './user.controller';
 import {
-	LOGIN_USER_REQ_SCHEMA_ID,
-	LOGIN_USER_RES_SCHEMA_ID,
-	REGISTER_USER_REQ_SCHEMA_ID,
+	LOGIN_USER_REQ_SCHEMA,
+	ACCESS_TOKEN_RES_SCHEMA,
+	REGISTER_USER_REQ_SCHEMA,
 	PUBLIC_USER_SCHEMA,
 } from './user.schema';
 
@@ -15,7 +15,7 @@ const userRoutePlugin: FastifyPluginCallback<{
 		method: 'POST',
 		url: '/register',
 		schema: {
-			body: { $ref: REGISTER_USER_REQ_SCHEMA_ID },
+			body: { $ref: REGISTER_USER_REQ_SCHEMA },
 			response: {
 				201: {
 					$ref: PUBLIC_USER_SCHEMA,
@@ -29,9 +29,9 @@ const userRoutePlugin: FastifyPluginCallback<{
 		method: 'POST',
 		url: '/login',
 		schema: {
-			body: { $ref: LOGIN_USER_REQ_SCHEMA_ID },
+			body: { $ref: LOGIN_USER_REQ_SCHEMA },
 			response: {
-				200: { $ref: LOGIN_USER_RES_SCHEMA_ID },
+				200: { $ref: ACCESS_TOKEN_RES_SCHEMA },
 			},
 		},
 		handler: opts.userController.login,
@@ -52,7 +52,11 @@ const userRoutePlugin: FastifyPluginCallback<{
 	fastify.route({
 		method: 'PATCH',
 		url: '/refresh',
-		// TODO response schema
+		schema: {
+			response: {
+				200: { $ref: ACCESS_TOKEN_RES_SCHEMA },
+			},
+		},
 		preHandler: authGuard,
 		handler: opts.userController.refreshAccessToken,
 	});

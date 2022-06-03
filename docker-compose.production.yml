@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: 'app'
+    build:
+      context: '.'
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - PORT=${PORT}
+      - SALT_ROUNDS=${SALT_ROUNDS}
+      - JWT_SECRET=${JWT_SECRET}
+      - DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@db:5432/postgres
+    command: bash -c "npx pnpm prisma:generate && npx prisma migrate deploy && npx pnpm prod"
+    depends_on:
+      - 'db'
+
+  db:
+    container_name: 'db'
+    image: postgres
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - '5432:5432'
+    volumes:
+      - 'data:/var/lib/postgresql/data'
+
+volumes:
+  data:

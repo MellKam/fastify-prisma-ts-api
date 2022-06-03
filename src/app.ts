@@ -9,8 +9,12 @@ import userPlugin from './routes/user/user.plugin';
 import { userSchemas } from './routes/user/user.schema';
 import { defaulFieldsSchema } from './utils/defautl-model-fileds';
 import cookiePlugin from '@fastify/cookie';
+import dotenv from 'dotenv';
+import { getEnvFileName } from './utils/environment';
 
-export function buildApp() {
+dotenv.config({ path: getEnvFileName() });
+
+export default function buildApp() {
 	const app = fastify({
 		logger: {
 			prettyPrint: {
@@ -41,5 +45,6 @@ export function buildApp() {
 	app.register(userPlugin);
 	app.register(productPlugin);
 
+	app.ready();
 	return app;
 }

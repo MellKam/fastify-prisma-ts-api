@@ -31,7 +31,11 @@ const productRoutePlugin: FastifyPluginCallback<{
 			response: {
 				200: { $ref: PRODUCT_SCHEMA_ID },
 			},
-			//TODO :id parameter validation
+			params: {
+				id: {
+					type: 'integer',
+				},
+			},
 		},
 		handler: opts.productController.findOne,
 	});
@@ -41,7 +45,11 @@ const productRoutePlugin: FastifyPluginCallback<{
 		url: '/:id',
 		schema: {
 			response: { 200: { $ref: PRODUCT_SCHEMA_ID } },
-			// TODO :id parameter validation
+			params: {
+				id: {
+					type: 'integer',
+				},
+			},
 		},
 		preHandler: authGuard,
 		handler: opts.productController.deleteOne,

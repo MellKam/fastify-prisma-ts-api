@@ -1,13 +1,10 @@
-import { buildApp } from './app';
-import { defaultConfig } from './plugins/config/config.service';
+import buildApp from './app';
 
 const bootstrap = async () => {
 	try {
-		const app = buildApp();
+		const app = await buildApp();
 
-		const PORT = process.env.PORT ? +process.env.PORT : defaultConfig.PORT;
-
-		await app.listen({ port: PORT });
+		await app.listen({ port: app.config.PORT });
 	} catch (error) {
 		console.error(error);
 		process.exit(1);

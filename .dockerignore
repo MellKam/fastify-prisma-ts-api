@@ -1,0 +1,12 @@
+.env
+.env.development.local
+.env.development
+.env.production
+.env.test
+.env.test.local
+.env.example
+.gitignore
+.prettierrc
+.eslintrc.js
+.husky
+node_modules

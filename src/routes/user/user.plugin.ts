@@ -7,6 +7,12 @@ import { UserController } from './user.controller';
 import userRoutePlugin from './user.route';
 import { UserService } from './user.service';
 
+declare module 'fastify' {
+	export interface FastifyInstance {
+		userService: UserService;
+	}
+}
+
 const userPluginCallback: FastifyPluginCallback = (fastify, _opts, done) => {
 	const userService = new UserService(
 		fastify.prisma.user,

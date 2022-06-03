@@ -1,12 +1,12 @@
 import { DEFAULT_FILEDS_SCHEMA } from '../../utils/defautl-model-fileds';
 
-export const REGISTER_USER_REQ_SCHEMA_ID = 'registerUserReqSchema';
+export const REGISTER_USER_REQ_SCHEMA = 'registerUserReqSchema';
 export const PUBLIC_USER_SCHEMA = 'publicUserSchema';
-export const LOGIN_USER_REQ_SCHEMA_ID = 'loginUserReqSchema';
-export const LOGIN_USER_RES_SCHEMA_ID = 'loginUserResSchema';
+export const LOGIN_USER_REQ_SCHEMA = 'loginUserReqSchema';
+export const ACCESS_TOKEN_RES_SCHEMA = 'accessTokenResSchema';
 
 const createUserReqSchema = {
-	$id: REGISTER_USER_REQ_SCHEMA_ID,
+	$id: REGISTER_USER_REQ_SCHEMA,
 	type: 'object',
 	properties: {
 		email: { type: 'string', format: 'email' },
@@ -40,7 +40,7 @@ const publicUserSchema = {
 };
 
 const loginUserReqSchema = {
-	$id: LOGIN_USER_REQ_SCHEMA_ID,
+	$id: LOGIN_USER_REQ_SCHEMA,
 	type: 'object',
 	properties: {
 		email: { type: 'string', format: 'email' },
@@ -50,8 +50,8 @@ const loginUserReqSchema = {
 	additionalProperties: false,
 };
 
-const loginUserResSchema = {
-	$id: LOGIN_USER_RES_SCHEMA_ID,
+const accessTokenResSchema = {
+	$id: ACCESS_TOKEN_RES_SCHEMA,
 	type: 'object',
 	properties: {
 		accessToken: { type: 'string' },
@@ -75,5 +75,5 @@ export const userSchemas = [
 	createUserReqSchema,
 	publicUserSchema,
 	loginUserReqSchema,
-	loginUserResSchema,
+	accessTokenResSchema,
 ];
