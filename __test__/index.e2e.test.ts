@@ -4,8 +4,8 @@ import buildApp from '../src/app';
 describe('test', () => {
 	let app: FastifyInstance;
 
-	beforeAll(() => {
-		app = buildApp();
+	beforeAll(async () => {
+		app = await buildApp();
 	});
 
 	it('first', async () => {

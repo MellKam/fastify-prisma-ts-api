@@ -2,36 +2,36 @@ version: '3.8'
 
 services:
   app:
-    container_name: 'app'
+    container_name: 'dev-app'
     build:
       context: '.'
     ports:
       - ${PORT}:${PORT}
     environment:
-      - NODE_ENV=${NODE_ENV}
+      - NODE_ENV=development
       - PORT=${PORT}
       - SALT_ROUNDS=${SALT_ROUNDS}
       - JWT_SECRET=${JWT_SECRET}
-      - DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@db:5432/postgres
+      - DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@dev-db:5432/${DB_USER}
     volumes:
       - '.:/usr/src/app'
       - '/usr/src/app/node_modules'
     restart: 'unless-stopped'
-    command: bash -c "npx pnpm prisma:generate || npx pnpm prisma:migrate:dev || ${DOCKER_COMMAND}"
+    command: bash -c "npx pnpm prisma:generate && npx prisma migrate deploy && npx pnpm dev"
     depends_on:
       - 'db'
 
   db:
-    container_name: 'db'
+    container_name: 'dev-db'
     image: postgres
     restart: always
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-    ports:
-      - '5432:5432'
+    expose:
+      - 5432
     volumes:
-      - 'data:/var/lib/postgresql/data'
+      - 'data-development:/var/lib/postgresql/data'
 
 volumes:
-  data:
+  data-development:
