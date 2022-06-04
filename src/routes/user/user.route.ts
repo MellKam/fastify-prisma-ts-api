@@ -1,12 +1,12 @@
 import { FastifyPluginCallback } from 'fastify';
-import authGuard from '../../plugins/auth/auth.guard';
-import { UserController } from './user.controller';
+import authGuard from '../../plugins/auth/auth.guard.js';
+import { UserController } from './user.controller.js';
 import {
 	LOGIN_USER_REQ_SCHEMA,
 	ACCESS_TOKEN_RES_SCHEMA,
 	REGISTER_USER_REQ_SCHEMA,
 	PUBLIC_USER_SCHEMA,
-} from './user.schema';
+} from './user.schema.js';
 
 const userRoutePlugin: FastifyPluginCallback<{
 	userController: UserController;

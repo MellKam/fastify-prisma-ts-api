@@ -1,7 +1,7 @@
 import plugin from 'fastify-plugin';
-import { CONFIG_PLUGIN } from '../config/config.plugin';
 import { FastifyPluginCallback } from 'fastify';
-import { HashService } from './hash.service';
+import { HashService } from './hash.service.js';
+import { CONFIG_PLUGIN, HASH_PLUGIN } from '../plugin-names.js';
 
 const hashPluginCallback: FastifyPluginCallback = (fastyfy, _opts, done) => {
 	const hashService = new HashService(fastyfy.config.SALT_ROUNDS);
@@ -10,11 +10,7 @@ const hashPluginCallback: FastifyPluginCallback = (fastyfy, _opts, done) => {
 	done();
 };
 
-export const HASH_PLUGIN = 'hashPlugin';
-
-const hashPlugin = plugin(hashPluginCallback, {
+export const hashPlugin = plugin(hashPluginCallback, {
 	name: HASH_PLUGIN,
 	dependencies: [CONFIG_PLUGIN],
 });
-
-export default hashPlugin;

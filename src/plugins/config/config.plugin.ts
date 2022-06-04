@@ -1,8 +1,7 @@
 import plugin from 'fastify-plugin';
 import { FastifyPluginCallback } from 'fastify';
-import initConfig from './config.service';
-
-export const CONFIG_PLUGIN = 'configPlugin';
+import initConfig from './config.service.js';
+import { CONFIG_PLUGIN } from '../plugin-names.js';
 
 const pluginCallback: FastifyPluginCallback = (fastify, _opts, done) => {
 	try {

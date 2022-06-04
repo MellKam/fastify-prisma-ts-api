@@ -1,11 +1,13 @@
 import { FastifyPluginCallback } from 'fastify';
 import plugin from 'fastify-plugin';
-import { AUTH_PLUGIN } from '../../plugins/auth/auth.plugin';
-import { HASH_PLUGIN } from '../../plugins/hash/hash.plugin';
-import { PRISMA_PLUGIN } from '../../plugins/prisma.plugin';
-import { UserController } from './user.controller';
-import userRoutePlugin from './user.route';
-import { UserService } from './user.service';
+import {
+	AUTH_PLUGIN,
+	DATABASE_PLUGIN,
+	HASH_PLUGIN,
+} from '../../plugins/plugin-names.js';
+import { UserController } from './user.controller.js';
+import userRoutePlugin from './user.route.js';
+import { UserService } from './user.service.js';
 
 declare module 'fastify' {
 	export interface FastifyInstance {
@@ -15,7 +17,7 @@ declare module 'fastify' {
 
 const userPluginCallback: FastifyPluginCallback = (fastify, _opts, done) => {
 	const userService = new UserService(
-		fastify.prisma.user,
+		fastify.db.user,
 		fastify.authService,
 		fastify.hashService,
 	);
@@ -31,7 +33,7 @@ const userPluginCallback: FastifyPluginCallback = (fastify, _opts, done) => {
 };
 
 const userPlugin = plugin(userPluginCallback, {
-	dependencies: [AUTH_PLUGIN, HASH_PLUGIN, PRISMA_PLUGIN],
+	dependencies: [AUTH_PLUGIN, HASH_PLUGIN, DATABASE_PLUGIN],
 });
 
 export default userPlugin;

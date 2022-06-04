@@ -1,7 +1,10 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { ForbiddentError, InternalServerError } from '../../utils/http-errors';
-import { ICreateUserReq, ILoginUserReq } from './user.schema';
-import { UserService } from './user.service';
+import {
+	ForbiddentError,
+	InternalServerError,
+} from '../../utils/http-errors.js';
+import { ICreateUserReq, ILoginUserReq } from './user.schema.js';
+import { UserService } from './user.service.js';
 
 const REFRESH_TOKEN = 'refresh_token';
 
@@ -32,7 +35,7 @@ export class UserController {
 		}
 
 		reply.setCookie(REFRESH_TOKEN, result.refreshToken, {
-			path: '/user/refresh',
+			path: '/user',
 		});
 
 		reply.status(200).send(result);

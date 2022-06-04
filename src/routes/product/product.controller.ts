@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { InternalServerError } from '../../utils/http-errors';
-import { ICreateProductReq } from './product.schema';
-import { ProductService } from './product.service';
+import { InternalServerError } from '../../utils/http-errors.js';
+import { ICreateProductReq } from './product.schema.js';
+import { ProductService } from './product.service.js';
 
 export class ProductController {
 	constructor(private readonly productService: ProductService) {}

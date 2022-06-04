@@ -6,4 +6,6 @@ node_modules
 .env.test
 .env.development.local
 .env.test.local
+
 .DS_Store
+dist

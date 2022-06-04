@@ -1,12 +1,15 @@
 import { PrismaClient } from '@prisma/client';
-import { AuthService, IAccessTokenPayload } from './plugins/auth/auth.service';
-import { IConfig } from './plugins/config/config.service';
-import { HashService } from './plugins/hash/hash.service';
+import {
+	AuthService,
+	IAccessTokenPayload,
+} from './plugins/auth/auth.service.js';
+import { IConfig } from './plugins/config/config.service.js';
+import { HashService } from './plugins/hash/hash.service.js';
 
 declare module 'fastify' {
 	export interface FastifyInstance {
 		config: IConfig;
-		prisma: PrismaClient;
+		db: PrismaClient;
 		hashService: HashService;
 		authService: AuthService;
 	}

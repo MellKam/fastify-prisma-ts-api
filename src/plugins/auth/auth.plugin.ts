@@ -1,7 +1,7 @@
 import plugin from 'fastify-plugin';
-import { CONFIG_PLUGIN } from '../config/config.plugin';
 import { FastifyPluginCallback } from 'fastify';
-import { AuthService, IAccessTokenPayload } from './auth.service';
+import { AuthService, IAccessTokenPayload } from './auth.service.js';
+import { AUTH_PLUGIN, CONFIG_PLUGIN } from '../plugin-names.js';
 
 const authPluginCallback: FastifyPluginCallback = (fastyfy, _opts, done) => {
 	const authService = new AuthService(fastyfy.config.JWT_SECRET);
@@ -10,6 +10,7 @@ const authPluginCallback: FastifyPluginCallback = (fastyfy, _opts, done) => {
 
 	fastyfy.decorateRequest('auth', null);
 
+	// executed on each request and set auth by user token(if it exist)
 	fastyfy.addHook('preHandler', (req, _reply, done) => {
 		const bearerToken = req.headers.authorization;
 
@@ -25,11 +26,7 @@ const authPluginCallback: FastifyPluginCallback = (fastyfy, _opts, done) => {
 	done();
 };
 
-export const AUTH_PLUGIN = 'authPlugin';
-
-const authPlugin = plugin(authPluginCallback, {
+export const authPlugin = plugin(authPluginCallback, {
 	name: AUTH_PLUGIN,
 	dependencies: [CONFIG_PLUGIN],
 });
-
-export default authPlugin;

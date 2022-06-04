@@ -2,10 +2,10 @@ import { Prisma } from '@prisma/client';
 import {
 	AuthService,
 	IRefreshTokenPayload,
-} from '../../plugins/auth/auth.service';
-import { HashService } from '../../plugins/hash/hash.service';
-import { ConflictError, InternalServerError } from '../../utils/http-errors';
-import { ICreateUserReq, ILoginUserReq } from './user.schema';
+} from '../../plugins/auth/auth.service.js';
+import { HashService } from '../../plugins/hash/hash.service.js';
+import { ConflictError, InternalServerError } from '../../utils/http-errors.js';
+import { ICreateUserReq, ILoginUserReq } from './user.schema.js';
 
 export class UserService {
 	constructor(

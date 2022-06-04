@@ -1,10 +1,10 @@
 import { Prisma } from '@prisma/client';
-import { ConflictError, InternalServerError } from '../../utils/http-errors';
-import { ICreateProductReq } from './product.schema';
+import { ConflictError, InternalServerError } from '../../utils/http-errors.js';
+import { ICreateProductReq } from './product.schema.js';
 
 export class ProductService {
 	constructor(
-		private readonly productRepository: Prisma.ProductDelegate<undefined>,
+		private readonly productRepository: Prisma.ProductDelegate<any>,
 	) {}
 
 	async create(productData: ICreateProductReq, ownerId: number) {

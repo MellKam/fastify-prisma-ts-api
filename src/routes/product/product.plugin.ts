@@ -1,9 +1,9 @@
 import { FastifyPluginCallback } from 'fastify';
-import { ProductController } from './product.controller';
-import productRoutePlugin from './product.route';
-import { ProductService } from './product.service';
+import { ProductController } from './product.controller.js';
+import productRoutePlugin from './product.route.js';
+import { ProductService } from './product.service.js';
 import plugin from 'fastify-plugin';
-import { PRISMA_PLUGIN } from '../../plugins/prisma.plugin';
+import { DATABASE_PLUGIN } from '../../plugins/plugin-names.js';
 
 declare module 'fastify' {
 	export interface FastifyInstance {
@@ -12,7 +12,7 @@ declare module 'fastify' {
 }
 
 const productPluginCallback: FastifyPluginCallback = (fastify, _opts, done) => {
-	const productService = new ProductService(fastify.prisma.product);
+	const productService = new ProductService(fastify.db.product);
 	fastify.decorate('productService', productService);
 
 	const productController = new ProductController(fastify.productService);
@@ -25,7 +25,7 @@ const productPluginCallback: FastifyPluginCallback = (fastify, _opts, done) => {
 };
 
 const productPlugin = plugin(productPluginCallback, {
-	dependencies: [PRISMA_PLUGIN],
+	dependencies: [DATABASE_PLUGIN],
 });
 
 export default productPlugin;

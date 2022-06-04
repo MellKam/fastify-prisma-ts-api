@@ -1,4 +1,4 @@
-import { DEFAULT_FILEDS_SCHEMA } from '../../utils/defautl-model-fileds';
+import { DEFAULT_FILEDS_SCHEMA } from '../../utils/defautl-model-fileds.js';
 
 export const CREATE_PRODUCE_REQ_SCHEMA_ID = 'createProductReqSchema';
 export const GET_PRODUCTS_RES_SCHEMA_ID = 'getProductsResSchema';
@@ -53,7 +53,7 @@ const getProductsQuerySchema = {
 
 export interface ICreateProductReq {
 	title: string;
-	content: string;
+	content?: string;
 	price: number;
 }
 

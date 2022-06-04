@@ -1,12 +1,12 @@
 import { FastifyPluginCallback } from 'fastify';
-import authGuard from '../../plugins/auth/auth.guard';
-import { ProductController } from './product.controller';
+import authGuard from '../../plugins/auth/auth.guard.js';
+import { ProductController } from './product.controller.js';
 import {
 	CREATE_PRODUCE_REQ_SCHEMA_ID,
 	GET_PRODUCTS_QUERY_SCHEMA,
 	GET_PRODUCTS_RES_SCHEMA_ID,
 	PRODUCT_SCHEMA_ID,
-} from './product.schema';
+} from './product.schema.js';
 
 const productRoutePlugin: FastifyPluginCallback<{
 	productController: ProductController;

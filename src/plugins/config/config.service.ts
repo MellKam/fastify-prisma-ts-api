@@ -1,4 +1,4 @@
-import { NODE_ENV_ARRAY, NODE_ENV_ENUM } from '../../utils/environment';
+import { NODE_ENV_ARRAY, NODE_ENV_ENUM } from '../../utils/environment.js';
 import env from 'env-var';
 
 export interface IConfig {

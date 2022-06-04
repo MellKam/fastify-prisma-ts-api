@@ -14,7 +14,7 @@ services:
       - SALT_ROUNDS=${SALT_ROUNDS}
       - JWT_SECRET=${JWT_SECRET}
       - DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@prod-db:5432/${DB_USER}
-    command: bash -c "npx pnpm prisma:generate && npx prisma migrate deploy && npx pnpm prod"
+    command: bash -c "npm run prisma:generate && npx prisma migrate deploy && npm run prod"
     depends_on:
       - 'db'
 

@@ -1,38 +1,37 @@
 import fastify from 'fastify';
-import authPlugin from './plugins/auth/auth.plugin';
-import { configPlugin } from './plugins/config/config.plugin';
-import hashPlugin from './plugins/hash/hash.plugin';
-import { prismaPlugin } from './plugins/prisma.plugin';
-import productPlugin from './routes/product/product.plugin';
-import { productSchemas } from './routes/product/product.schema';
-import userPlugin from './routes/user/user.plugin';
-import { userSchemas } from './routes/user/user.schema';
-import { defaulFieldsSchema } from './utils/defautl-model-fileds';
 import cookiePlugin from '@fastify/cookie';
 import dotenv from 'dotenv';
-import { getEnvFileName } from './utils/environment';
+import * as plugins from './plugins/index.js';
+import productPlugin from './routes/product/product.plugin.js';
+import { productSchemas } from './routes/product/product.schema.js';
+import userPlugin from './routes/user/user.plugin.js';
+import { userSchemas } from './routes/user/user.schema.js';
+import { defaulFieldsSchema } from './utils/defautl-model-fileds.js';
+import { getEnvFileName, isProductionEnv } from './utils/environment.js';
 
 dotenv.config({ path: getEnvFileName() });
 
 export default function buildApp() {
 	const app = fastify({
 		logger: {
-			prettyPrint: {
-				colorize: true,
-				ignore: 'pid,hostname',
-				translateTime: true,
-			},
+			prettyPrint: isProductionEnv
+				? false
+				: {
+						colorize: true,
+						ignore: 'pid,hostname',
+						translateTime: true,
+				  },
 		},
 	});
 
-	app.register(configPlugin);
-	app.register(prismaPlugin);
+	app.register(plugins.configPlugin);
+	app.register(plugins.databasePlugin);
 	app.register(cookiePlugin, {
 		parseOptions: { httpOnly: true },
 	});
 
-	app.register(hashPlugin);
-	app.register(authPlugin);
+	app.register(plugins.hashPlugin);
+	app.register(plugins.authPlugin);
 
 	for (const schema of [
 		...productSchemas,

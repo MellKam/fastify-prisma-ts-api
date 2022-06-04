@@ -17,3 +17,6 @@ export const getEnvFileName = () => {
 			: ''
 	}`;
 };
+
+export const isProductionEnv =
+	process.env.NODE_ENV === NODE_ENV_ENUM.production;

@@ -1,4 +1,4 @@
-import { DEFAULT_FILEDS_SCHEMA } from '../../utils/defautl-model-fileds';
+import { DEFAULT_FILEDS_SCHEMA } from '../../utils/defautl-model-fileds.js';
 
 export const REGISTER_USER_REQ_SCHEMA = 'registerUserReqSchema';
 export const PUBLIC_USER_SCHEMA = 'publicUserSchema';
