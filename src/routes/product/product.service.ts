@@ -1,5 +1,8 @@
 import { Prisma } from '@prisma/client';
-import { ConflictError, InternalServerError } from '../../utils/http-errors.js';
+import {
+	BadRequestError,
+	InternalServerError,
+} from '../../utils/http-errors.js';
 import { ICreateProductReq } from './product.schema.js';
 
 export class ProductService {
@@ -14,7 +17,7 @@ export class ProductService {
 			});
 		} catch (error: any) {
 			if (error.code === 'P2003') {
-				return new ConflictError('User with this id does not exist');
+				return new BadRequestError('User with this id does not exist');
 			}
 			return new InternalServerError(error);
 		}
@@ -26,7 +29,7 @@ export class ProductService {
 				where: { AND: { id: productId, ownerId } },
 			});
 			if (!result.count) {
-				return new ConflictError(
+				return new BadRequestError(
 					`Product #${productId} do not exist or not belong to User #${ownerId}`,
 				);
 			}
@@ -43,7 +46,7 @@ export class ProductService {
 			});
 
 			if (product === null) {
-				return new ConflictError('Product with this id does not exist');
+				return new BadRequestError('Product with this id does not exist');
 			}
 			return product;
 		} catch (error) {

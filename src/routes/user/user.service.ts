@@ -4,7 +4,11 @@ import {
 	IRefreshTokenPayload,
 } from '../../plugins/auth/auth.service.js';
 import { HashService } from '../../plugins/hash/hash.service.js';
-import { ConflictError, InternalServerError } from '../../utils/http-errors.js';
+import {
+	BadRequestError,
+	InternalServerError,
+	UnauthorizedError,
+} from '../../utils/http-errors.js';
 import { ICreateUserReq, ILoginUserReq } from './user.schema.js';
 
 export class UserService {
@@ -20,7 +24,7 @@ export class UserService {
 				where: { email: data.email },
 			});
 			if (exisingUser !== null) {
-				return new ConflictError('User with this email already exist');
+				return new BadRequestError('User with this email already exist');
 			}
 
 			const { password, ...userData } = data;
@@ -40,7 +44,7 @@ export class UserService {
 				where: { email: data.email },
 			});
 			if (user === null) {
-				return new ConflictError('User with this email not exist');
+				return new BadRequestError('User with this email not exist');
 			}
 
 			const isPasswordValid = await this.hashService.validatePassword(
@@ -50,7 +54,7 @@ export class UserService {
 			);
 
 			if (!isPasswordValid) {
-				return new ConflictError(`Invalid password for user ${data.email}`);
+				return new BadRequestError(`Invalid password for user ${data.email}`);
 			}
 
 			user = await this.userRepository.update({
@@ -70,14 +74,14 @@ export class UserService {
 				refreshToken,
 			) as IRefreshTokenPayload | null;
 			if (refreshTokenPayload === null) {
-				return new ConflictError('Invalid refresh token');
+				return new UnauthorizedError('Invalid refresh token');
 			}
 
 			const user = await this.userRepository.findUnique({
 				where: { id: refreshTokenPayload.userId },
 			});
 			if (user === null) {
-				return new ConflictError('Invalid refresh token');
+				return new UnauthorizedError('Invalid refresh token');
 			}
 
 			return this.authService.generateAccessToken({ userId: user.id });
@@ -92,7 +96,7 @@ export class UserService {
 				refreshToken,
 			) as IRefreshTokenPayload | null;
 			if (refreshTokenPayload === null) {
-				return new ConflictError('Invalid refresh token');
+				return new UnauthorizedError('Invalid refresh token');
 			}
 
 			const user = await this.userRepository.update({
@@ -114,7 +118,7 @@ export class UserService {
 			const user = await this.userRepository.findUnique({ where: { id } });
 
 			if (user === null) {
-				return new ConflictError('User with this id does not exist');
+				return new BadRequestError('User with this id does not exist');
 			}
 			return user;
 		} catch (error) {
