@@ -1,14 +1,11 @@
 import fastify from 'fastify';
-import cookiePlugin from '@fastify/cookie';
 import dotenv from 'dotenv';
 import * as plugins from './plugins/index.js';
-import productPlugin from './routes/product/product.plugin.js';
-import { productSchemas } from './routes/product/product.schema.js';
-import userPlugin from './routes/user/user.plugin.js';
-import { userSchemas } from './routes/user/user.schema.js';
-import { defaulFieldsSchema } from './utils/defautl-model-fileds.js';
+import cookiePlugin from '@fastify/cookie';
 import { getEnvFileName, isProductionEnv } from './utils/environment.js';
 import { HttpError, InternalServerError } from './utils/http-errors.js';
+import { apiSchemas, apiPlugin } from './routes/api.js';
+import { defaulFieldsSchema } from './utils/defautl-model-fileds.js';
 
 dotenv.config({ path: getEnvFileName() });
 
@@ -27,6 +24,8 @@ export default function buildApp() {
 
 	app.register(plugins.configPlugin);
 	app.register(plugins.databasePlugin);
+	app.register(plugins.corsPlugin);
+
 	app.register(cookiePlugin, {
 		parseOptions: { httpOnly: true },
 	});
@@ -34,16 +33,11 @@ export default function buildApp() {
 	app.register(plugins.hashPlugin);
 	app.register(plugins.authPlugin);
 
-	for (const schema of [
-		...productSchemas,
-		...userSchemas,
-		defaulFieldsSchema,
-	]) {
+	for (const schema of [defaulFieldsSchema, ...apiSchemas]) {
 		app.addSchema(schema);
 	}
 
-	app.register(userPlugin);
-	app.register(productPlugin);
+	app.register(apiPlugin, { prefix: 'api' });
 
 	app.setErrorHandler((error, _req, reply) => {
 		reply.log.error(error);

@@ -7,6 +7,7 @@ export interface IConfig {
 	DATABASE_URL: string;
 	SALT_ROUNDS: number;
 	JWT_SECRET: string;
+	WEB_APP_URL: string;
 }
 
 const defaultConfig: IConfig = {
@@ -15,6 +16,7 @@ const defaultConfig: IConfig = {
 	SALT_ROUNDS: 6,
 	JWT_SECRET: 'secret_key',
 	DATABASE_URL: '',
+	WEB_APP_URL: '',
 };
 
 export default function initConfig(): IConfig {
@@ -37,11 +39,14 @@ export default function initConfig(): IConfig {
 		.default(defaultConfig.JWT_SECRET)
 		.asString();
 
+	const WEB_APP_URL = env.get('WEB_APP_URL').required().asUrlString();
+
 	return {
 		DATABASE_URL,
 		JWT_SECRET,
 		NODE_ENV,
 		PORT,
 		SALT_ROUNDS,
+		WEB_APP_URL,
 	};
 }

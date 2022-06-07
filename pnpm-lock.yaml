@@ -5,6 +5,7 @@ specifiers:
   '@commitlint/config-conventional': ^17.0.0
   '@faker-js/faker': ^7.1.0
   '@fastify/cookie': ^6.0.0
+  '@fastify/cors': ^7.0.0
   '@prisma/client': 3.14.0
   '@types/bcryptjs': ^2.4.2
   '@types/jest': ^28.1.0
@@ -36,6 +37,7 @@ specifiers:
 
 dependencies:
   '@fastify/cookie': 6.0.0
+  '@fastify/cors': 7.0.0
   '@prisma/client': 3.14.0_prisma@3.14.0
   '@types/bcryptjs': 2.4.2
   '@types/jsonwebtoken': 8.5.8
@@ -616,6 +618,13 @@ packages:
     dependencies:
       cookie-signature: 1.2.0
       fastify-plugin: 3.0.1
+    dev: false
+
+  /@fastify/cors/7.0.0:
+    resolution: {integrity: sha512-nlo6ScwagBNJacAZD3KX90xjWLIoV0vN9QqoX1wUE9ZeZMdvkVkMZCGlxEtr00NshV0X5wDge4w5rwox7rRzSg==}
+    dependencies:
+      fastify-plugin: 3.0.1
+      vary: 1.1.2
     dev: false
 
   /@fastify/error/2.0.0:
@@ -4705,6 +4714,11 @@ packages:
       spdx-correct: 3.1.1
       spdx-expression-parse: 3.0.1
     dev: true
+
+  /vary/1.1.2:
+    resolution: {integrity: sha1-IpnwLG3tMNSllhsLn3RSShj2NPw=}
+    engines: {node: '>= 0.8'}
+    dev: false
 
   /walker/1.0.8:
     resolution: {integrity: sha512-ts/8E8l5b7kY0vlWLewOkDXMmPdLcVV4GmOQLyxuSswIJsweeFZtAsMF7k1Nszz+TYBQrlYRmzOnr398y1JemQ==}
