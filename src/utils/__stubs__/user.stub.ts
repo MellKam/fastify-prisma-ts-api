@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { User } from '@prisma/client';
+import { randomUUID } from 'crypto';
 
 /**
  * @param amount
@@ -13,7 +14,7 @@ export const getFakeUsers = (amount = 1): User[] => {
 
 	for (let i = 1; i <= amount; i++) {
 		users.push({
-			id: i,
+			id: randomUUID(),
 			email: faker.internet.email(),
 			name: faker.internet.userName(),
 			password: faker.internet.password(),

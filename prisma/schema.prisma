@@ -8,9 +8,7 @@ datasource db {
 }
 
 model User {
-	// TODO int -> uuid
-	// id Int @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid 
-	id Int @id @default(autoincrement())
+	id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 	createdAt DateTime @default(now())
 	updatedAt DateTime @updatedAt
 	
@@ -24,7 +22,7 @@ model User {
 }
 
 model Product {
-	id Int @id @default(autoincrement())
+	id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 	createdAt DateTime @default(now())
 	updatedAt DateTime @updatedAt
 
@@ -33,5 +31,5 @@ model Product {
 	price Float
 
 	owner User @relation(fields: [ownerId], references: [id])
-	ownerId Int
+	ownerId String @db.Uuid
 }

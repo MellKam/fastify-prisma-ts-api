@@ -1,14 +1,43 @@
-import createError from '@fastify/error';
+import { isProductionEnv } from './environment.js';
 
-export const BadRequestError = createError('HTTP_BAD_REQUEST_ERROR', '', 400);
-export const UnauthorizedError = createError(
-	'HTTP_UNAUTHORIZED_ERROR',
-	'',
-	401,
-);
-export const ForbiddentError = createError('HTTP_FORBIDDEN_ERROR', '', 403);
-export const InternalServerError = createError(
-	'HTTP_INTERNAL_SERVER_ERROR',
-	'Error was occured on the server',
-	500,
-);
+export interface ErrorWithMessage {
+	message: string;
+}
+
+enum ErrorStatusCode {
+	BAD_REQUEST = 400,
+	UNAUTHORIZED = 401,
+	FORBIDDEN = 403,
+	INTERNAL = 500,
+}
+
+export class HttpError extends Error {
+	constructor(readonly message: string, readonly statusCode: ErrorStatusCode) {
+		super(message);
+	}
+}
+
+export class BadRequestError extends HttpError {
+	constructor(readonly message: string) {
+		super(message, ErrorStatusCode.BAD_REQUEST);
+	}
+}
+
+export class UnauthorizedError extends HttpError {
+	constructor(readonly message: string) {
+		super(message, ErrorStatusCode.UNAUTHORIZED);
+	}
+}
+
+export class ForbiddentError extends HttpError {
+	constructor(readonly message: string) {
+		super(message, ErrorStatusCode.FORBIDDEN);
+	}
+}
+
+export class InternalServerError extends HttpError {
+	constructor(readonly msg?: string) {
+		const message = !isProductionEnv && msg ? msg : 'Internal server error';
+		super(message, ErrorStatusCode.INTERNAL);
+	}
+}

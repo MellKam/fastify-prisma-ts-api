@@ -3,7 +3,7 @@ export const defaulFieldsSchema = {
 	$id: DEFAULT_FILEDS_SCHEMA,
 	type: 'object',
 	properties: {
-		id: { type: 'integer' },
+		id: { type: 'string' },
 		createdAt: { type: 'string', format: 'date-time' },
 		updatedAt: { type: 'string', format: 'date-time' },
 	},

@@ -22,7 +22,7 @@ export class ProductController {
 	}
 
 	async findOne(
-		req: FastifyRequest<{ Params: { id: number } }>,
+		req: FastifyRequest<{ Params: { id: string } }>,
 		reply: FastifyReply,
 	) {
 		const result = await this.productService.findOne(req.params.id);
@@ -36,9 +36,15 @@ export class ProductController {
 		if (!req.auth) return new InternalServerError();
 
 		const result = await this.productService.deleteUserProduct(
-			+req.params.id,
+			req.params.id,
 			req.auth.userId,
 		);
+
+		if (result === true) {
+			reply.status(204).send();
+			return;
+		}
+
 		reply.send(result);
 	}
 
@@ -46,9 +52,7 @@ export class ProductController {
 		req: FastifyRequest<{ Querystring: { ownerId?: string } }>,
 		reply: FastifyReply,
 	) {
-		req.log.info(req.query);
-		const ownerId = req.query.ownerId ? +req.query.ownerId : undefined;
-		const result = await this.productService.findAll(ownerId);
+		const result = await this.productService.findAll(req.query.ownerId);
 		reply.send(result);
 	}
 }

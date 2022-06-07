@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import {
 	AuthService,
 	IRefreshTokenPayload,
@@ -13,7 +13,7 @@ import { ICreateUserReq, ILoginUserReq } from './user.schema.js';
 
 export class UserService {
 	constructor(
-		private readonly userRepository: Prisma.UserDelegate<undefined>,
+		private readonly userRepository: PrismaClient['user'],
 		private readonly authService: AuthService,
 		private readonly hashService: HashService,
 	) {}
@@ -33,8 +33,8 @@ export class UserService {
 			return await this.userRepository.create({
 				data: { ...userData, password: hash, salt },
 			});
-		} catch (error) {
-			return new InternalServerError();
+		} catch (error: any) {
+			return new InternalServerError(error.message);
 		}
 	}
 
@@ -63,8 +63,8 @@ export class UserService {
 			});
 
 			return this.authService.generateKeyPair(user.id, user.tokenVersion);
-		} catch (error) {
-			return new InternalServerError();
+		} catch (error: any) {
+			return new InternalServerError(error.msg);
 		}
 	}
 
@@ -85,8 +85,8 @@ export class UserService {
 			}
 
 			return this.authService.generateAccessToken({ userId: user.id });
-		} catch (error) {
-			throw new InternalServerError();
+		} catch (error: any) {
+			throw new InternalServerError(error.message);
 		}
 	}
 
@@ -108,12 +108,12 @@ export class UserService {
 				tokenVersion: user.tokenVersion,
 				userId: user.id,
 			});
-		} catch (error) {
-			return new InternalServerError();
+		} catch (error: any) {
+			return new InternalServerError(error.message);
 		}
 	}
 
-	async getUser(id: number) {
+	async getUser(id: string) {
 		try {
 			const user = await this.userRepository.findUnique({ where: { id } });
 
@@ -121,8 +121,8 @@ export class UserService {
 				return new BadRequestError('User with this id does not exist');
 			}
 			return user;
-		} catch (error) {
-			return new InternalServerError(error);
+		} catch (error: any) {
+			return new InternalServerError(error.message);
 		}
 	}
 }

@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import {
 	BadRequestError,
 	InternalServerError,
@@ -6,11 +6,9 @@ import {
 import { ICreateProductReq } from './product.schema.js';
 
 export class ProductService {
-	constructor(
-		private readonly productRepository: Prisma.ProductDelegate<any>,
-	) {}
+	constructor(private readonly productRepository: PrismaClient['product']) {}
 
-	async create(productData: ICreateProductReq, ownerId: number) {
+	async create(productData: ICreateProductReq, ownerId: string) {
 		try {
 			return await this.productRepository.create({
 				data: { ...productData, ownerId },
@@ -19,27 +17,27 @@ export class ProductService {
 			if (error.code === 'P2003') {
 				return new BadRequestError('User with this id does not exist');
 			}
-			return new InternalServerError(error);
+			return new InternalServerError(error.message);
 		}
 	}
 
-	async deleteUserProduct(productId: number, ownerId: number) {
+	async deleteUserProduct(productId: string, ownerId: string) {
 		try {
 			const result = await this.productRepository.deleteMany({
 				where: { AND: { id: productId, ownerId } },
 			});
 			if (!result.count) {
 				return new BadRequestError(
-					`Product #${productId} do not exist or not belong to User #${ownerId}`,
+					`Product with id "${productId}" do not exist or not belong to User with id "${ownerId}"`,
 				);
 			}
-			return result;
+			return true;
 		} catch (error: any) {
-			return new InternalServerError(error);
+			return new InternalServerError(error.message);
 		}
 	}
 
-	async findOne(productId: number) {
+	async findOne(productId: string) {
 		try {
 			const product = await this.productRepository.findUnique({
 				where: { id: productId },
@@ -49,20 +47,20 @@ export class ProductService {
 				return new BadRequestError('Product with this id does not exist');
 			}
 			return product;
-		} catch (error) {
-			return new InternalServerError(error);
+		} catch (error: any) {
+			return new InternalServerError(error.message);
 		}
 	}
 
-	async findAll(ownerId?: number) {
+	async findAll(ownerId?: string) {
 		try {
 			const where: Prisma.ProductWhereInput = {};
 
 			if (ownerId) where.ownerId = ownerId;
 
 			return await this.productRepository.findMany({ where });
-		} catch (error) {
-			return new InternalServerError(error);
+		} catch (error: any) {
+			return new InternalServerError(error.message);
 		}
 	}
 }

@@ -3,7 +3,6 @@ import authGuard from '../../plugins/auth/auth.guard.js';
 import { ProductController } from './product.controller.js';
 import {
 	CREATE_PRODUCE_REQ_SCHEMA_ID,
-	GET_PRODUCTS_QUERY_SCHEMA,
 	GET_PRODUCTS_RES_SCHEMA_ID,
 	PRODUCT_SCHEMA_ID,
 } from './product.schema.js';
@@ -32,8 +31,8 @@ const productRoutePlugin: FastifyPluginCallback<{
 				200: { $ref: PRODUCT_SCHEMA_ID },
 			},
 			params: {
-				id: {
-					type: 'integer',
+				properties: {
+					id: { type: 'string' },
 				},
 			},
 		},
@@ -44,10 +43,9 @@ const productRoutePlugin: FastifyPluginCallback<{
 		method: 'DELETE',
 		url: '/:id',
 		schema: {
-			response: { 200: { $ref: PRODUCT_SCHEMA_ID } },
 			params: {
-				id: {
-					type: 'integer',
+				properties: {
+					id: { type: 'string' },
 				},
 			},
 		},
@@ -62,7 +60,11 @@ const productRoutePlugin: FastifyPluginCallback<{
 			response: {
 				200: { $ref: GET_PRODUCTS_RES_SCHEMA_ID },
 			},
-			querystring: { $ref: GET_PRODUCTS_QUERY_SCHEMA },
+			querystring: {
+				properties: {
+					ownerId: { type: 'string' },
+				},
+			},
 		},
 		handler: opts.productController.findAll,
 	});

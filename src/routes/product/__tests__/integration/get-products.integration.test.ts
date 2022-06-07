@@ -16,7 +16,8 @@ describe('createProduct', () => {
 
 	it('must work', async () => {
 		const user = getFakeUsers()[0];
-		const products = getFakeProducts(5);
+		const products = getFakeProducts(5, user.id);
+
 		await app.db.user.create({ data: user });
 		await app.db.product.createMany({ data: products });
 

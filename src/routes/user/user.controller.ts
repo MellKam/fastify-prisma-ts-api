@@ -44,7 +44,7 @@ export class UserController {
 	async revokeRefreshToken(req: FastifyRequest, reply: FastifyReply) {
 		const refreshToken = req.cookies[REFRESH_TOKEN];
 		if (!refreshToken) {
-			return reply.send(new ForbiddentError());
+			return reply.send(new ForbiddentError('Not found refreshToken'));
 		}
 
 		const result = await this.userService.revokeRefreshToken(refreshToken);

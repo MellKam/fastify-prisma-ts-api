@@ -10,7 +10,7 @@ const createProductReqSchema = {
 	type: 'object',
 	properties: {
 		title: { type: 'string' },
-		content: { type: 'string' },
+		content: { type: 'string', nullable: true },
 		price: { type: 'number' },
 	},
 	required: ['title', 'price'],
@@ -28,7 +28,7 @@ const productSchema = {
 	definitions: {
 		ownerIdProperty: {
 			properties: {
-				ownerId: { type: 'integer' },
+				ownerId: { type: 'string' },
 			},
 			required: ['ownerId'],
 		},
@@ -42,15 +42,6 @@ const getProductsResSchema = {
 	items: { $ref: PRODUCT_SCHEMA_ID },
 };
 
-const getProductsQuerySchema = {
-	$id: GET_PRODUCTS_QUERY_SCHEMA,
-	type: 'object',
-	properties: {
-		ownerId: { type: 'integer' },
-	},
-	additionalProperties: false,
-};
-
 export interface ICreateProductReq {
 	title: string;
 	content?: string;
@@ -61,5 +52,4 @@ export const productSchemas = [
 	productSchema,
 	createProductReqSchema,
 	getProductsResSchema,
-	getProductsQuerySchema,
 ];

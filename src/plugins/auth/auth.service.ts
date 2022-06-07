@@ -1,12 +1,12 @@
 import jwt from 'jsonwebtoken';
 
 export interface IRefreshTokenPayload {
-	userId: number;
+	userId: string;
 	tokenVersion: number;
 }
 
 export interface IAccessTokenPayload {
-	userId: number;
+	userId: string;
 }
 
 export class AuthService {
@@ -20,7 +20,7 @@ export class AuthService {
 		return jwt.sign(payload, this.secret, { expiresIn: '15m' });
 	}
 
-	generateKeyPair(userId: number, tokenVersion: number) {
+	generateKeyPair(userId: string, tokenVersion: number) {
 		const refreshToken = this.generateRefreshToken({ userId, tokenVersion });
 		const accessToken = this.generateAccessToken({ userId });
 
