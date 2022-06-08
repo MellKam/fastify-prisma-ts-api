@@ -1,5 +1,4 @@
 import { FastifyPluginCallback } from 'fastify';
-import authGuard from '../../plugins/auth/auth.guard.js';
 import { ProductController } from './product.controller.js';
 import {
 	CREATE_PRODUCE_REQ_SCHEMA_ID,
@@ -7,9 +6,9 @@ import {
 	PRODUCT_SCHEMA_ID,
 } from './product.schema.js';
 
-const productRoutePlugin: FastifyPluginCallback<{
-	productController: ProductController;
-}> = (fastify, opts, done) => {
+export const productRouter: FastifyPluginCallback = (fastify, _opts, done) => {
+	const productController = new ProductController(fastify.productService);
+
 	fastify.route({
 		method: 'POST',
 		url: '/',
@@ -19,8 +18,8 @@ const productRoutePlugin: FastifyPluginCallback<{
 				201: { $ref: PRODUCT_SCHEMA_ID },
 			},
 		},
-		preHandler: authGuard,
-		handler: opts.productController.create,
+		preHandler: fastify.jwtGuard,
+		handler: productController.create,
 	});
 
 	fastify.route({
@@ -36,7 +35,7 @@ const productRoutePlugin: FastifyPluginCallback<{
 				},
 			},
 		},
-		handler: opts.productController.findOne,
+		handler: productController.findOne,
 	});
 
 	fastify.route({
@@ -49,8 +48,8 @@ const productRoutePlugin: FastifyPluginCallback<{
 				},
 			},
 		},
-		preHandler: authGuard,
-		handler: opts.productController.deleteOne,
+		preHandler: fastify.jwtGuard,
+		handler: productController.deleteOne,
 	});
 
 	fastify.route({
@@ -66,10 +65,8 @@ const productRoutePlugin: FastifyPluginCallback<{
 				},
 			},
 		},
-		handler: opts.productController.findAll,
+		handler: productController.findAll,
 	});
 
 	done();
 };
-
-export default productRoutePlugin;

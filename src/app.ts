@@ -4,7 +4,7 @@ import * as plugins from './plugins/index.js';
 import cookiePlugin from '@fastify/cookie';
 import { getEnvFileName, isProductionEnv } from './utils/environment.js';
 import { HttpError, InternalServerError } from './utils/http-errors.js';
-import { apiSchemas, apiPlugin } from './routes/api.js';
+import { apiSchemas, apiRouter } from './routes/api.js';
 import { defaulFieldsSchema } from './utils/defautl-model-fileds.js';
 
 dotenv.config({ path: getEnvFileName() });
@@ -37,7 +37,7 @@ export default function buildApp() {
 		app.addSchema(schema);
 	}
 
-	app.register(apiPlugin, { prefix: 'api' });
+	app.register(apiRouter, { prefix: 'api' });
 
 	app.setErrorHandler((error, _req, reply) => {
 		reply.log.error(error);
