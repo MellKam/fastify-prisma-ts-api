@@ -1,27 +1,22 @@
-import { DEFAULT_FILEDS_SCHEMA } from '../../utils/defautl-model-fileds.js';
+import { Type, Static } from '@sinclair/typebox';
+import { Nullable } from '../../utils/typebox.provider.js';
 
-export const PUBLIC_USER_SCHEMA = 'publicUserSchema';
-
-const publicUserSchema = {
-	$id: PUBLIC_USER_SCHEMA,
-	type: 'object',
-	allOf: [
-		{ $ref: DEFAULT_FILEDS_SCHEMA },
-		{ $ref: '#/definitions/publicUserProperties' },
-	],
-	definitions: {
-		publicUserProperties: {
-			properties: {
-				email: { type: 'string', format: 'email' },
-				name: {
-					type: 'string',
-					nullable: true,
-				},
-			},
-			required: ['email'],
-		},
+const publicUserSchema = Type.Object(
+	{
+		id: Type.String({ format: 'uuid' }),
+		createdAt: Type.String({ format: 'date-time' }),
+		updatedAt: Type.String({ format: 'date-time' }),
+		email: Type.String(),
+		name: Nullable(Type.String()),
+		locale: Nullable(Type.String()),
 	},
-	additionalProperties: false,
-};
+	{
+		$id: 'publicUserSchema',
+		additionalProperties: false,
+	},
+);
+
+export const publicUserRef = Type.Ref(publicUserSchema);
+export type publicUserType = Static<typeof publicUserSchema>;
 
 export const userSchemas = [publicUserSchema];

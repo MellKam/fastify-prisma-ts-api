@@ -10,15 +10,16 @@ export interface IConfig {
 	WEB_APP_URL: string;
 	ACCESS_TOKEN_EXPIRES_TIME: string;
 	REFRESH_TOKEN_EXPIRES_TIME: string;
+	GOOGLE_OAUTH_CLIENT_ID: string;
+	GOOGLE_OAUTH_CLIENT_SECRET: string;
+	GOOGLE_OAUTH_REDIRECT_URL: string;
 }
 
-const defaultConfig: IConfig = {
+const defaultConfig = {
 	NODE_ENV: NODE_ENV_ENUM.development,
 	PORT: 5000,
 	SALT_ROUNDS: 6,
 	JWT_SECRET: 'secret_key',
-	DATABASE_URL: '',
-	WEB_APP_URL: '',
 	ACCESS_TOKEN_EXPIRES_TIME: '15m',
 	REFRESH_TOKEN_EXPIRES_TIME: '7d',
 };
@@ -55,6 +56,21 @@ export default function initConfig(): IConfig {
 		.default(defaultConfig.REFRESH_TOKEN_EXPIRES_TIME)
 		.asString();
 
+	const GOOGLE_OAUTH_CLIENT_ID = env
+		.get('GOOGLE_OAUTH_CLIENT_ID')
+		.required()
+		.asString();
+
+	const GOOGLE_OAUTH_CLIENT_SECRET = env
+		.get('GOOGLE_OAUTH_CLIENT_SECRET')
+		.required()
+		.asString();
+
+	const GOOGLE_OAUTH_REDIRECT_URL = env
+		.get('GOOGLE_OAUTH_REDIRECT_URL')
+		.required()
+		.asUrlString();
+
 	return {
 		DATABASE_URL,
 		JWT_SECRET,
@@ -64,5 +80,8 @@ export default function initConfig(): IConfig {
 		WEB_APP_URL,
 		ACCESS_TOKEN_EXPIRES_TIME,
 		REFRESH_TOKEN_EXPIRES_TIME,
+		GOOGLE_OAUTH_CLIENT_ID,
+		GOOGLE_OAUTH_CLIENT_SECRET,
+		GOOGLE_OAUTH_REDIRECT_URL,
 	};
 }

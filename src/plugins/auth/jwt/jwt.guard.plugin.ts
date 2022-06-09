@@ -17,9 +17,8 @@ const jwtGuardPluginCallback: FastifyPluginCallback = (
 
 		if (bearerToken) {
 			const token = bearerToken.split(' ')[1];
-			const payload = fastify.jwtService.getTokenPayload(
-				token,
-			) as IAccessTokenPayload;
+			const payload =
+				fastify.jwtService.verifyToken<IAccessTokenPayload>(token);
 
 			req.auth = payload;
 			done();

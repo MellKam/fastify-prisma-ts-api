@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { ForbiddentError } from '../../utils/http-errors.js';
-import { IRegisterUserReq, ILoginUserReq } from './auth.schema.js';
+import { localLoginReqType, localRegisterReqType } from './auth.schema.js';
 import { AuthService } from './auth.service.js';
 
 const REFRESH_TOKEN = 'refresh_token';
@@ -8,11 +8,11 @@ const REFRESH_TOKEN = 'refresh_token';
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 
-	async register(
-		req: FastifyRequest<{ Body: IRegisterUserReq }>,
+	async localRegister(
+		req: FastifyRequest<{ Body: localRegisterReqType }>,
 		reply: FastifyReply,
 	) {
-		const result = await this.authService.register(req.body);
+		const result = await this.authService.localRegister(req.body);
 
 		if (result instanceof Error) {
 			return reply.send(result);
@@ -21,18 +21,18 @@ export class AuthController {
 		reply.status(201).send(result);
 	}
 
-	async login(
-		req: FastifyRequest<{ Body: ILoginUserReq }>,
+	async localLogin(
+		req: FastifyRequest<{ Body: localLoginReqType }>,
 		reply: FastifyReply,
 	) {
-		const result = await this.authService.login(req.body);
+		const result = await this.authService.localLogin(req.body);
 
 		if (result instanceof Error) {
 			return reply.send(result);
 		}
 
 		reply.setCookie(REFRESH_TOKEN, result.refreshToken, {
-			path: '/user',
+			path: '/api/auth/',
 		});
 
 		reply.status(200).send(result);
@@ -62,5 +62,28 @@ export class AuthController {
 		}
 
 		reply.send({ accessToken: result });
+	}
+
+	getGoogleAuthUrl(_req: FastifyRequest, reply: FastifyReply) {
+		const url = this.authService.getGoogleAuthUrl();
+
+		reply.send({ url });
+	}
+
+	async googleAuthHandler(
+		req: FastifyRequest<{ Querystring: { code: string } }>,
+		reply: FastifyReply,
+	) {
+		const result = await this.authService.verifyGoogleUser(req.query.code);
+
+		if (result instanceof Error) {
+			return reply.send(result);
+		}
+
+		reply.setCookie(REFRESH_TOKEN, result.refreshToken, {
+			path: '/api/auth',
+		});
+
+		reply.status(200).send(result);
 	}
 }

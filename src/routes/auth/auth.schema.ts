@@ -1,53 +1,43 @@
-export const REGISTER_USER_REQ_SCHEMA = 'registerUserReqSchema';
-export const LOGIN_USER_REQ_SCHEMA = 'loginUserReqSchema';
-export const ACCESS_TOKEN_RES_SCHEMA = 'accessTokenResSchema';
+import { Static, Type } from '@sinclair/typebox';
 
-const registerUserReqSchema = {
-	$id: REGISTER_USER_REQ_SCHEMA,
-	type: 'object',
-	properties: {
-		email: { type: 'string', format: 'email' },
-		name: { type: 'string' },
-		password: { type: 'string', minLength: 6 },
+const localRegisterReqSchema = Type.Object(
+	{
+		email: Type.String({ format: 'email' }),
+		name: Type.Optional(Type.String()),
+		password: Type.String({ minLength: 6 }),
 	},
-	required: ['email', 'password'],
-	additionalProperties: false,
-};
+	{ $id: 'localRegisterReqSchema', additionalProperties: false },
+);
 
-const loginUserReqSchema = {
-	$id: LOGIN_USER_REQ_SCHEMA,
-	type: 'object',
-	properties: {
-		email: { type: 'string', format: 'email' },
-		password: { type: 'string' },
+const localLoginReqSchema = Type.Object(
+	{
+		email: Type.String({ format: 'email' }),
+		password: Type.String(),
 	},
-	required: ['email', 'password'],
-	additionalProperties: false,
-};
-
-const accessTokenResSchema = {
-	$id: ACCESS_TOKEN_RES_SCHEMA,
-	type: 'object',
-	properties: {
-		accessToken: { type: 'string' },
+	{
+		$id: 'localLoginReqSchema',
+		additionalProperties: false,
 	},
-	required: ['accessToken'],
-	additionalProperties: false,
-};
+);
 
-export interface IRegisterUserReq {
-	email: string;
-	name?: string;
-	password: string;
-}
+const accessTokenResSchema = Type.Object(
+	{
+		accessToken: Type.String(),
+	},
+	{
+		$id: 'accessTokenResSchema',
+		additionalProperties: false,
+	},
+);
 
-export interface ILoginUserReq {
-	email: string;
-	password: string;
-}
+export const localRegisterReqRef = Type.Ref(localRegisterReqSchema);
+export type localRegisterReqType = Static<typeof localRegisterReqSchema>;
+export const localLoginReqRef = Type.Ref(localLoginReqSchema);
+export type localLoginReqType = Static<typeof localLoginReqSchema>;
+export const accessTokenResRef = Type.Ref(accessTokenResSchema);
 
 export const authSchemas = [
-	registerUserReqSchema,
-	loginUserReqSchema,
+	localRegisterReqSchema,
+	localLoginReqSchema,
 	accessTokenResSchema,
 ];

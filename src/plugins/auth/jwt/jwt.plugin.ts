@@ -5,11 +5,7 @@ import { JWT_PLUGIN, CONFIG_PLUGIN } from '../../plugin-names.js';
 import { JWT_SERVICE_DECORATOR } from '../../decorator-names.js';
 
 const jwtPluginCallback: FastifyPluginCallback = (fastify, _opts, done) => {
-	const jwtService = new JwtService(
-		fastify.config.JWT_SECRET,
-		fastify.config.ACCESS_TOKEN_EXPIRES_TIME,
-		fastify.config.REFRESH_TOKEN_EXPIRES_TIME,
-	);
+	const jwtService = new JwtService(fastify.config);
 
 	fastify.decorate(JWT_SERVICE_DECORATOR, jwtService);
 

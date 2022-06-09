@@ -5,39 +5,51 @@ import cookiePlugin from '@fastify/cookie';
 import { getEnvFileName, isProductionEnv } from './utils/environment.js';
 import { HttpError, InternalServerError } from './utils/http-errors.js';
 import { apiSchemas, apiRouter } from './routes/api.js';
-import { defaulFieldsSchema } from './utils/defautl-model-fileds.js';
+import {
+	ajvTypeBoxPlugin,
+	TypeBoxTypeProvider,
+} from './utils/typebox.provider.js';
 
 dotenv.config({ path: getEnvFileName() });
 
-export default function buildApp() {
+export default async function buildApp() {
 	const app = fastify({
+		ajv: {
+			customOptions: {
+				strict: 'log',
+			},
+			plugins: [ajvTypeBoxPlugin],
+		},
 		logger: {
-			prettyPrint: isProductionEnv
-				? false
+			transport: isProductionEnv
+				? undefined
 				: {
-						colorize: true,
-						ignore: 'pid,hostname',
-						translateTime: true,
+						target: 'pino-pretty',
+						options: {
+							translateTime: 'HH:MM:ss Z',
+							ignore: 'pid,hostname',
+						},
 				  },
 		},
-	});
+	}).withTypeProvider<TypeBoxTypeProvider>();
 
-	app.register(plugins.configPlugin);
-	app.register(plugins.databasePlugin);
-	app.register(plugins.corsPlugin);
+	await app.register(plugins.configPlugin);
+	await app.register(plugins.databasePlugin);
+	await app.register(plugins.corsPlugin);
+	await app.register(plugins.httpPlugin);
 
-	app.register(cookiePlugin, {
+	await app.register(cookiePlugin, {
 		parseOptions: { httpOnly: true },
 	});
 
-	app.register(plugins.hashPlugin);
-	app.register(plugins.authPlugin);
+	await app.register(plugins.hashPlugin);
+	await app.register(plugins.authPlugin);
 
-	for (const schema of [defaulFieldsSchema, ...apiSchemas]) {
+	for (const schema of apiSchemas) {
 		app.addSchema(schema);
 	}
 
-	app.register(apiRouter, { prefix: 'api' });
+	await app.register(apiRouter, { prefix: 'api' });
 
 	app.setErrorHandler((error, _req, reply) => {
 		reply.log.error(error);
@@ -54,6 +66,6 @@ export default function buildApp() {
 		reply.send(new InternalServerError());
 	});
 
-	app.ready();
+	await app.ready();
 	return app;
 }

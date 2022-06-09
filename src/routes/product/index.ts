@@ -21,15 +21,11 @@ export const productServicePlugin = plugin(productServiceCallback, {
 	dependencies: [DATABASE_PLUGIN],
 });
 
-const productRouteCallback: FastifyPluginCallback<{ prefix: string }> = (
-	fastify,
-	opts,
-	done,
-) => {
-	fastify.register(productRouter, { prefix: opts.prefix });
-	done();
-};
-
-export const productRoutePlugin = plugin(productRouteCallback, {
-	dependencies: [PRODUCT_SERVICE],
-});
+export const productRoutePlugin = plugin<{ prefix: string }>(
+	async (fastify, opts) => {
+		await fastify.register(productRouter, { prefix: opts.prefix });
+	},
+	{
+		dependencies: [PRODUCT_SERVICE],
+	},
+);
