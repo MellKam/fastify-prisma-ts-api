@@ -30,13 +30,20 @@ const accessTokenResSchema = Type.Object(
 	},
 );
 
+const googleUrlResSchema = Type.Object(
+	{ url: Type.String({ format: 'uri' }) },
+	{ additionalProperties: false, $id: 'googleUriResSchema' },
+);
+
 export const localRegisterReqRef = Type.Ref(localRegisterReqSchema);
 export type localRegisterReqType = Static<typeof localRegisterReqSchema>;
 export const localLoginReqRef = Type.Ref(localLoginReqSchema);
 export type localLoginReqType = Static<typeof localLoginReqSchema>;
 export const accessTokenResRef = Type.Ref(accessTokenResSchema);
+export const googleUrlResRef = Type.Ref(googleUrlResSchema);
 
 export const authSchemas = [
+	googleUrlResSchema,
 	localRegisterReqSchema,
 	localLoginReqSchema,
 	accessTokenResSchema,

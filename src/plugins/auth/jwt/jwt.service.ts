@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-import { IConfig } from '../../config/config.service.js';
 
 export interface IRefreshTokenPayload {
 	userId: string;
@@ -10,18 +9,24 @@ export interface IAccessTokenPayload {
 	userId: string;
 }
 
+interface JwtServiceOptions {
+	JWT_SECRET: string;
+	REFRESH_TOKEN_EXPIRES_TIME: string;
+	ACCESS_TOKEN_EXPIRES_TIME: string;
+}
+
 export class JwtService {
-	constructor(readonly config: IConfig) {}
+	constructor(private readonly options: JwtServiceOptions) {}
 
 	generateRefreshToken(payload: IRefreshTokenPayload) {
-		return jwt.sign(payload, this.config.JWT_SECRET, {
-			expiresIn: this.config.REFRESH_TOKEN_EXPIRES_TIME,
+		return jwt.sign(payload, this.options.JWT_SECRET, {
+			expiresIn: this.options.REFRESH_TOKEN_EXPIRES_TIME,
 		});
 	}
 
 	generateAccessToken(payload: IAccessTokenPayload) {
-		return jwt.sign(payload, this.config.JWT_SECRET, {
-			expiresIn: this.config.ACCESS_TOKEN_EXPIRES_TIME,
+		return jwt.sign(payload, this.options.JWT_SECRET, {
+			expiresIn: this.options.ACCESS_TOKEN_EXPIRES_TIME,
 		});
 	}
 
@@ -34,7 +39,7 @@ export class JwtService {
 
 	verifyToken<T>(token: string) {
 		try {
-			return jwt.verify(token, this.config.JWT_SECRET) as T;
+			return jwt.verify(token, this.options.JWT_SECRET) as T;
 		} catch (error) {
 			return null;
 		}

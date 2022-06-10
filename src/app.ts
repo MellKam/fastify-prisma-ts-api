@@ -1,16 +1,13 @@
 import fastify from 'fastify';
-import dotenv from 'dotenv';
 import * as plugins from './plugins/index.js';
 import cookiePlugin from '@fastify/cookie';
-import { getEnvFileName, isProductionEnv } from './utils/environment.js';
+import { isProductionEnv } from './utils/environment.js';
 import { HttpError, InternalServerError } from './utils/http-errors.js';
 import { apiSchemas, apiRouter } from './routes/api.js';
 import {
 	ajvTypeBoxPlugin,
 	TypeBoxTypeProvider,
 } from './utils/typebox.provider.js';
-
-dotenv.config({ path: getEnvFileName() });
 
 export default async function buildApp() {
 	const app = fastify({
@@ -49,22 +46,23 @@ export default async function buildApp() {
 		app.addSchema(schema);
 	}
 
-	await app.register(apiRouter, { prefix: 'api' });
+	await app.register(apiRouter, { prefix: '/api' });
 
 	app.setErrorHandler((error, _req, reply) => {
 		reply.log.error(error);
 		if (error instanceof HttpError || error.validation) {
-			reply.send(error);
-			return;
+			return reply.send(error);
 		}
 
-		if (!isProductionEnv && (error as any)?.serialization) {
-			reply.send(new InternalServerError('Serialization error'));
-			return;
+		if (!isProductionEnv) {
+			return reply.send(error);
 		}
 
-		reply.send(new InternalServerError());
+		return reply.send(new InternalServerError());
 	});
+
+	// app.log.info(app.printRoutes({ commonPrefix: false }));
+	// app.log.info(app.printPlugins());
 
 	await app.ready();
 	return app;

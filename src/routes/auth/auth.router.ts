@@ -3,6 +3,7 @@ import { publicUserRef } from '../user/user.schema.js';
 import { AuthController } from './auth.controller.js';
 import {
 	accessTokenResRef,
+	googleUrlResRef,
 	localLoginReqRef,
 	localRegisterReqRef,
 } from './auth.schema.js';
@@ -36,7 +37,7 @@ export const authRouter: FastifyPluginCallback = (fastify, _opts, done) => {
 
 	fastify.route({
 		method: 'PATCH',
-		url: '/access_token/refresh',
+		url: '/refresh',
 		schema: {
 			response: {
 				200: accessTokenResRef,
@@ -48,24 +49,29 @@ export const authRouter: FastifyPluginCallback = (fastify, _opts, done) => {
 
 	fastify.route({
 		method: 'PATCH',
-		url: '/refresh_token/revoke',
+		url: '/logout',
 		preHandler: fastify.jwtGuard,
-		handler: authController.revokeRefreshToken,
+		handler: authController.logout,
 	});
-
-	// TODO logout
 
 	fastify.route({
 		method: 'GET',
-		url: '/google/uri',
+		url: '/google/url',
+		schema: {
+			response: {
+				200: googleUrlResRef,
+			},
+		},
 		handler: authController.getGoogleAuthUrl,
 	});
 
 	fastify.route({
 		method: 'GET',
-		url: '/google',
+		url: '/google/callback',
 		schema: {
-			response: accessTokenResRef,
+			response: {
+				200: accessTokenResRef,
+			},
 		},
 		handler: authController.googleAuthHandler,
 	});

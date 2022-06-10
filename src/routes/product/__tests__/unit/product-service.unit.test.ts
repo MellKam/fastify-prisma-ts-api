@@ -14,7 +14,10 @@ describe('productService unitTests', () => {
 		prismaClientMock.product.create.mockResolvedValueOnce(product);
 		const createProductSpy = jest.spyOn(prismaClientMock.product, 'create');
 
-		const createProductData = { title: product.title, price: product.price };
+		const createProductData = {
+			title: product.title,
+			price: product.price,
+		};
 
 		const result = await productService.create(
 			createProductData,

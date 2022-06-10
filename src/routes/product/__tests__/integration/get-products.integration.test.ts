@@ -1,15 +1,15 @@
 import buildApp from '../../../../app';
-import { FastifyInstance } from 'fastify';
 import { getFakeProducts } from '../../../../utils/__stubs__/product.stub.js';
 import { getFakeUsers } from '../../../../utils/__stubs__/user.stub.js';
 
 describe('createProduct', () => {
-	let app: FastifyInstance;
+	let app: Awaited<ReturnType<typeof buildApp>>;
 
 	beforeAll(async () => {
 		try {
 			app = await buildApp();
 		} catch (error) {
+			console.error(error);
 			process.exit(1);
 		}
 	});
@@ -21,7 +21,7 @@ describe('createProduct', () => {
 		await app.db.user.create({ data: user });
 		await app.db.product.createMany({ data: products });
 
-		const response = await app.inject({ method: 'GET', url: '/product' });
+		const response = await app.inject({ method: 'GET', url: '/api/product' });
 
 		expect(response.statusCode).toBe(200);
 		expect(JSON.parse(response.body)).toEqual(

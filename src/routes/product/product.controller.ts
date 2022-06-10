@@ -1,13 +1,13 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { InternalServerError } from '../../utils/http-errors.js';
-import { ICreateProductReq } from './product.schema.js';
+import { createProductReqType } from './product.schema.js';
 import { ProductService } from './product.service.js';
 
 export class ProductController {
 	constructor(private readonly productService: ProductService) {}
 
 	async create(
-		req: FastifyRequest<{ Body: ICreateProductReq }>,
+		req: FastifyRequest<{ Body: createProductReqType }>,
 		reply: FastifyReply,
 	) {
 		if (!req.auth) return new InternalServerError();

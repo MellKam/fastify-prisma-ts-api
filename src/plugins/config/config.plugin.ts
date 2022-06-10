@@ -1,15 +1,36 @@
 import plugin from 'fastify-plugin';
 import { FastifyPluginCallback } from 'fastify';
-import initConfig from './config.service.js';
 import { CONFIG_PLUGIN } from '../plugin-names.js';
-import { CONFIG_DECORATOR } from '../decorator-names.js';
+import envSchema from 'env-schema';
+import { getEnvFileName } from '../../utils/environment.js';
+import { AppConfig, configSchema } from './config.schema.js';
+import Ajv from 'ajv';
+import ajvFormats from 'ajv-formats';
 
-const pluginCallback: FastifyPluginCallback = (fastify, _opts, done) => {
+const pluginCallback: FastifyPluginCallback<{ logConfig: boolean }> = (
+	fastify,
+	opts,
+	done,
+) => {
 	try {
-		const config = initConfig();
+		const config = envSchema<AppConfig>({
+			dotenv: { path: getEnvFileName() },
+			schema: configSchema,
+			ajv: ajvFormats(
+				new Ajv({
+					allErrors: true,
+					removeAdditional: true,
+					useDefaults: true,
+					coerceTypes: true,
+				}),
+			),
+		});
 
-		fastify.decorate(CONFIG_DECORATOR, config);
-		fastify.log.info(config, 'Server config');
+		fastify.decorate('config', config);
+
+		if (opts.logConfig) {
+			fastify.log.info(config, 'Server config');
+		}
 
 		done();
 	} catch (error: any) {

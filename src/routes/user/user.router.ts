@@ -17,5 +17,7 @@ export const userRouter: FastifyPluginCallback = (fastify, _opts, done) => {
 		handler: userController.me,
 	});
 
+	// TODO get user by id
+
 	done();
 };

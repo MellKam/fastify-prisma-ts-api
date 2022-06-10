@@ -11,9 +11,9 @@ export const apiRouter: FastifyPluginAsync = async (fastify, _opts) => {
 	await fastify.register(productServicePlugin);
 	await fastify.register(userServicePlugin);
 
-	await fastify.register(authRoutePlugin, { prefix: 'auth' });
-	await fastify.register(productRoutePlugin, { prefix: 'product' });
-	await fastify.register(userRoutePlugin, { prefix: 'user' });
+	await fastify.register(authRoutePlugin, { prefix: '/auth' });
+	await fastify.register(productRoutePlugin, { prefix: '/product' });
+	await fastify.register(userRoutePlugin, { prefix: '/user' });
 };
 
 export const apiSchemas = [...authSchemas, ...productSchemas, ...userSchemas];

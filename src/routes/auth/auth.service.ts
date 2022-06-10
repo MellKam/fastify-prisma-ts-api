@@ -10,7 +10,6 @@ import {
 import { HashService } from '../../plugins/hash/hash.service.js';
 import {
 	BadRequestError,
-	HttpError,
 	InternalServerError,
 	UnauthorizedError,
 } from '../../utils/http-errors.js';
@@ -122,57 +121,40 @@ export class AuthService {
 		}
 	}
 
-	async revokeRefreshToken(refreshToken: string) {
-		try {
-			const refreshTokenPayload =
-				this.jwtService.verifyToken<IRefreshTokenPayload>(refreshToken);
-			if (refreshTokenPayload === null) {
-				return new UnauthorizedError('Invalid refresh token');
-			}
-
-			const user = await this.userRepository.update({
-				where: { id: refreshTokenPayload.userId },
-				data: { tokenVersion: { increment: 1 } },
-			});
-
-			return this.jwtService.generateRefreshToken({
-				tokenVersion: user.tokenVersion,
-				userId: user.id,
-			});
-		} catch (error: any) {
-			return new InternalServerError(error.message);
-		}
-	}
-
 	getGoogleAuthUrl() {
 		return this.googleAuthService.getGoogleAuthUrl();
 	}
 
-	async verifyGoogleUser(code: string) {
-		// TODO decompose this method, because it toooooo big
+	async getGoogleUserByCode(code: string) {
 		const googleResponse = await this.googleAuthService.verifyUserCode(code);
-		if (googleResponse instanceof HttpError) {
-			return googleResponse;
-		}
 
-		const googleUserInfo = this.jwtService.decodeToken<IGoogleUserInfo>(
+		const googleUser = this.jwtService.decodeToken<IGoogleUserInfo>(
 			googleResponse.id_token,
 		);
-		if (googleUserInfo === null) {
-			return new InternalServerError('Cannot decode user token');
+		if (googleUser === null) {
+			throw new InternalServerError('Cannot decode user token');
 		}
 
-		if (!googleUserInfo.email_verified) {
-			return new BadRequestError('User email not verified');
+		if (!googleUser.email_verified) {
+			throw new BadRequestError('User email not verified');
 		}
 
-		const existingUser = await this.userRepository.findUnique({
-			where: { email: googleUserInfo.email },
-		});
+		return googleUser;
+	}
 
-		if (existingUser !== null) {
-			if (!existingUser.googleSub) {
-				try {
+	async loginOrRegisterUserWithGoogle(code: string): Promise<{
+		userId: string;
+		tokenVersion: number;
+	}> {
+		try {
+			const googleUserInfo = await this.getGoogleUserByCode(code);
+
+			const existingUser = await this.userRepository.findUnique({
+				where: { email: googleUserInfo.email },
+			});
+
+			if (existingUser !== null) {
+				if (existingUser.googleSub === null) {
 					const user = await this.userRepository.update({
 						where: { id: existingUser.id },
 						data: {
@@ -183,28 +165,20 @@ export class AuthService {
 						},
 					});
 
-					return this.jwtService.generateKeyPair(user.id, user.tokenVersion);
-				} catch (error) {
-					return new InternalServerError('Error while updating user');
+					return { userId: user.id, tokenVersion: user.tokenVersion };
 				}
-			}
 
-			try {
 				await this.userRepository.update({
 					where: { id: existingUser.id },
 					data: { tokenVersion: { increment: 1 } },
 				});
 
-				return this.jwtService.generateKeyPair(
-					existingUser.id,
-					existingUser.tokenVersion++,
-				);
-			} catch (error) {
-				return new InternalServerError('Error while logged in user');
+				return {
+					userId: existingUser.id,
+					tokenVersion: existingUser.tokenVersion++,
+				};
 			}
-		}
 
-		try {
 			const user = await this.userRepository.create({
 				data: {
 					email: googleUserInfo.email,
@@ -215,9 +189,26 @@ export class AuthService {
 				},
 			});
 
-			return this.jwtService.generateKeyPair(user.id, user.tokenVersion);
-		} catch (error) {
-			return new InternalServerError('Error while creating new user');
+			return { userId: user.id, tokenVersion: user.tokenVersion };
+		} catch (error: any) {
+			throw new InternalServerError(error.message);
+		}
+	}
+
+	async getJwtKeypairWithGoogleCode(code: string) {
+		const result = await this.loginOrRegisterUserWithGoogle(code);
+
+		return this.jwtService.generateKeyPair(result.userId, result.tokenVersion);
+	}
+
+	async logout(userId: string) {
+		try {
+			await this.userRepository.update({
+				where: { id: userId },
+				data: { tokenVersion: { increment: 1 } },
+			});
+		} catch (error: any) {
+			return new InternalServerError(error.message);
 		}
 	}
 }

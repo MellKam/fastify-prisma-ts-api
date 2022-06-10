@@ -43,12 +43,12 @@ export class GoogleAuthService {
 	constructor(
 		private readonly GOOGLE_OAUTH_CLIENT_ID: string,
 		private readonly GOOGLE_OAUTH_CLIENT_SECRET: string,
-		private readonly GOOGLE_OAUTH_REDIRECT_URL: string,
+		private readonly GOOGLE_OAUTH_REDIRECT_URI: string,
 		private readonly axios: AxiosInstance,
 	) {
 		this.AUTH_URI_OPTIONS = {
 			client_id: this.GOOGLE_OAUTH_CLIENT_ID,
-			redirect_uri: this.GOOGLE_OAUTH_REDIRECT_URL,
+			redirect_uri: this.GOOGLE_OAUTH_REDIRECT_URI,
 			access_type: 'offline',
 			response_type: 'code',
 			prompt: 'consent',
@@ -67,7 +67,7 @@ export class GoogleAuthService {
 			code,
 			client_id: this.GOOGLE_OAUTH_CLIENT_ID,
 			client_secret: this.GOOGLE_OAUTH_CLIENT_SECRET,
-			redirect_uri: this.GOOGLE_OAUTH_REDIRECT_URL,
+			redirect_uri: this.GOOGLE_OAUTH_REDIRECT_URI,
 			grant_type: 'authorization_code',
 		});
 
@@ -81,7 +81,7 @@ export class GoogleAuthService {
 			);
 			return response.data;
 		} catch (error: any) {
-			return new HttpError(
+			throw new HttpError(
 				`Cannot get response from ${this.TOKEN_URI}, error: ${JSON.stringify(
 					error.response?.data,
 				)}`,

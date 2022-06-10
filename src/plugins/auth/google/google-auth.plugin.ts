@@ -5,7 +5,6 @@ import {
 	GOOGLE_AUTH_PLUGIN,
 	HTTP_PLUGIN,
 } from '../../plugin-names.js';
-import { GOOGLE_AUTH_SERVICE_DECORATOR } from '../../decorator-names.js';
 import { GoogleAuthService } from './google-auth.service.js';
 
 const googleAuthPluginCallback: FastifyPluginCallback = (
@@ -16,11 +15,11 @@ const googleAuthPluginCallback: FastifyPluginCallback = (
 	const googleAuthService = new GoogleAuthService(
 		fastify.config.GOOGLE_OAUTH_CLIENT_ID,
 		fastify.config.GOOGLE_OAUTH_CLIENT_SECRET,
-		fastify.config.GOOGLE_OAUTH_REDIRECT_URL,
+		fastify.config.GOOGLE_OAUTH_REDIRECT_URI,
 		fastify.axios,
 	);
 
-	fastify.decorate(GOOGLE_AUTH_SERVICE_DECORATOR, googleAuthService);
+	fastify.decorate('googleAuthService', googleAuthService);
 
 	done();
 };

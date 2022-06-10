@@ -4,7 +4,7 @@ import { Nullable } from '../../utils/typebox.provider.js';
 const createProductReqSchema = Type.Object(
 	{
 		title: Type.String(),
-		content: Nullable(Type.String()),
+		content: Type.Optional(Type.String()),
 		price: Type.Number(),
 	},
 	{
