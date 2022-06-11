@@ -1,4 +1,6 @@
-import jwt from 'jsonwebtoken';
+import type jwt from 'jsonwebtoken';
+
+type JsonWebToken = typeof jwt;
 
 export interface IRefreshTokenPayload {
 	userId: string;
@@ -9,24 +11,27 @@ export interface IAccessTokenPayload {
 	userId: string;
 }
 
-interface JwtServiceOptions {
-	JWT_SECRET: string;
-	REFRESH_TOKEN_EXPIRES_TIME: string;
-	ACCESS_TOKEN_EXPIRES_TIME: string;
+interface JwtServiceConfig {
+	readonly JWT_SECRET: string;
+	readonly REFRESH_TOKEN_EXPIRES_TIME: string;
+	readonly ACCESS_TOKEN_EXPIRES_TIME: string;
 }
 
 export class JwtService {
-	constructor(private readonly options: JwtServiceOptions) {}
+	constructor(
+		private readonly jwt: JsonWebToken,
+		private readonly config: JwtServiceConfig,
+	) {}
 
 	generateRefreshToken(payload: IRefreshTokenPayload) {
-		return jwt.sign(payload, this.options.JWT_SECRET, {
-			expiresIn: this.options.REFRESH_TOKEN_EXPIRES_TIME,
+		return this.jwt.sign(payload, this.config.JWT_SECRET, {
+			expiresIn: this.config.REFRESH_TOKEN_EXPIRES_TIME,
 		});
 	}
 
 	generateAccessToken(payload: IAccessTokenPayload) {
-		return jwt.sign(payload, this.options.JWT_SECRET, {
-			expiresIn: this.options.ACCESS_TOKEN_EXPIRES_TIME,
+		return this.jwt.sign(payload, this.config.JWT_SECRET, {
+			expiresIn: this.config.ACCESS_TOKEN_EXPIRES_TIME,
 		});
 	}
 
@@ -39,13 +44,13 @@ export class JwtService {
 
 	verifyToken<T>(token: string) {
 		try {
-			return jwt.verify(token, this.options.JWT_SECRET) as T;
+			return this.jwt.verify(token, this.config.JWT_SECRET) as T;
 		} catch (error) {
 			return null;
 		}
 	}
 
 	decodeToken<T>(token: string) {
-		return jwt.decode(token) as T | null;
+		return this.jwt.decode(token) as T | null;
 	}
 }

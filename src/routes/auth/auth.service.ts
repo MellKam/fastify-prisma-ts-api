@@ -1,8 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import {
-	GoogleAuthService,
-	IGoogleUserInfo,
-} from '../../plugins/auth/google/google-auth.service.js';
+import { GoogleAuthService } from '../../plugins/auth/google/google-auth.service.js';
+import { GoogleUserInfo } from '../../plugins/auth/google/google-auth.types.js';
 import {
 	IRefreshTokenPayload,
 	JwtService,
@@ -128,7 +126,7 @@ export class AuthService {
 	async getGoogleUserByCode(code: string) {
 		const googleResponse = await this.googleAuthService.verifyUserCode(code);
 
-		const googleUser = this.jwtService.decodeToken<IGoogleUserInfo>(
+		const googleUser = this.jwtService.decodeToken<GoogleUserInfo>(
 			googleResponse.id_token,
 		);
 		if (googleUser === null) {
