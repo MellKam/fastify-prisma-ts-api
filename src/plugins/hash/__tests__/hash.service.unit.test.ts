@@ -2,30 +2,25 @@ import bcrypt from 'bcryptjs';
 import { HashService } from '../hash.service.js';
 import { faker } from '@faker-js/faker';
 import { getRandomHash } from '../../../utils/__stubs__/hash.stub.js';
+import { vi, describe, beforeEach, expect, it } from 'vitest';
 
 describe('HashService', () => {
 	const SALT_ROUNDS = 5;
-	let hashService: HashService;
+	const hashService = new HashService(bcrypt, SALT_ROUNDS);
 	let testHash: string;
 	let testSalt: string;
 	let userPassword: string;
-
-	beforeAll(() => {
-		hashService = new HashService(bcrypt, SALT_ROUNDS);
-	});
 
 	beforeEach(() => {
 		userPassword = faker.internet.password();
 		testHash = getRandomHash();
 		testSalt = getRandomHash();
-
-		jest.resetAllMocks();
 	});
 
 	describe('hashPassword', () => {
 		it('hashPassword', async () => {
-			bcrypt.hash = jest.fn().mockResolvedValue(testHash);
-			bcrypt.genSalt = jest.fn().mockResolvedValue(testSalt);
+			bcrypt.hash = vi.fn().mockResolvedValue(testHash);
+			bcrypt.genSalt = vi.fn().mockResolvedValue(testSalt);
 
 			const result = await hashService.hashPassword(userPassword);
 
@@ -39,7 +34,7 @@ describe('HashService', () => {
 
 	describe('validatePassword', () => {
 		it('must return true', async () => {
-			bcrypt.hash = jest.fn().mockResolvedValue(testHash);
+			bcrypt.hash = vi.fn().mockResolvedValue(testHash);
 
 			const result = await hashService.validatePassword(
 				userPassword,
@@ -54,7 +49,7 @@ describe('HashService', () => {
 
 		it('must return false', async () => {
 			const differentHash = getRandomHash();
-			bcrypt.hash = jest.fn().mockImplementation((_s, _salt) => differentHash);
+			bcrypt.hash = vi.fn().mockImplementation((_s, _salt) => differentHash);
 
 			const result = await hashService.validatePassword(
 				userPassword,

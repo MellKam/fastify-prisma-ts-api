@@ -12,7 +12,7 @@
 	],
 	"root": true,
 	"env": { "node": true, "jest": true },
-	"ignorePatterns": ["prisma", "jest.config.js", "coverage"],
+	"ignorePatterns": ["prisma", "vite.config.ts", "coverage"],
 	"rules": {
 		"prettier/prettier": "warn",
 		"@typescript-eslint/no-unused-vars": [

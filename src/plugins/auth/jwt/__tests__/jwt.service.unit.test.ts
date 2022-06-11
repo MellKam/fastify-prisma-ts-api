@@ -1,4 +1,3 @@
-// import { faker } from '@faker-js/faker';
 import jwt from 'jsonwebtoken';
 import {
 	IAccessTokenPayload,
@@ -7,21 +6,19 @@ import {
 } from '../jwt.service.js';
 import { getRandomHash } from '../../../../utils/__stubs__/hash.stub.js';
 import { faker } from '@faker-js/faker';
+import { describe, vi, expect, it, beforeEach } from 'vitest';
 
 describe('JwtService', () => {
 	const ACCESS_TOKEN_EXPIRES_TIME = '15m';
 	const REFRESH_TOKEN_EXPIRES_TIME = '7d';
 	const JWT_SECRET = 'secret';
-	let jwtService: JwtService;
-	let token: string;
-
-	beforeAll(() => {
-		jwtService = new JwtService(jwt, {
-			ACCESS_TOKEN_EXPIRES_TIME,
-			REFRESH_TOKEN_EXPIRES_TIME,
-			JWT_SECRET,
-		});
+	const jwtService = new JwtService(jwt, {
+		ACCESS_TOKEN_EXPIRES_TIME,
+		REFRESH_TOKEN_EXPIRES_TIME,
+		JWT_SECRET,
 	});
+
+	let token: string;
 
 	beforeEach(() => {
 		token = getRandomHash();
@@ -29,7 +26,7 @@ describe('JwtService', () => {
 
 	describe('generateRefreshToken', () => {
 		it('must call jwt.sign and return token', () => {
-			jwt.sign = jest.fn().mockReturnValue(token);
+			jwt.sign = vi.fn().mockReturnValue(token);
 			const payload: IRefreshTokenPayload = { tokenVersion: 0, userId: 'id' };
 
 			const refreshToken = jwtService.generateRefreshToken(payload);
@@ -49,11 +46,11 @@ describe('JwtService', () => {
 			const accessToken = getRandomHash();
 			const refreshToken = getRandomHash();
 
-			const generateAccessTokenSpy = jest
+			const generateAccessTokenSpy = vi
 				.spyOn(jwtService, 'generateAccessToken')
 				.mockReturnValue(accessToken);
 
-			const generateRefreshTokenSpy = jest
+			const generateRefreshTokenSpy = vi
 				.spyOn(jwtService, 'generateRefreshToken')
 				.mockReturnValue(refreshToken);
 
@@ -75,7 +72,7 @@ describe('JwtService', () => {
 
 	describe('generateAccessToken', () => {
 		it('must call ', () => {
-			jwt.sign = jest.fn().mockReturnValue(token);
+			jwt.sign = vi.fn().mockReturnValue(token);
 			const payload: IAccessTokenPayload = { userId: 'id' };
 
 			const accessToken = jwtService.generateAccessToken(payload);
@@ -86,9 +83,5 @@ describe('JwtService', () => {
 
 			expect(accessToken).toBe(token);
 		});
-	});
-
-	afterEach(() => {
-		jest.restoreAllMocks();
 	});
 });

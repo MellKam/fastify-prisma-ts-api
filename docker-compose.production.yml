@@ -12,7 +12,7 @@ services:
       - NODE_ENV=production
       - DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@prod-db:5432/${DB_USER}
     env_file: .env.production
-    command: bash -c "npx prisma migrate deploy && npm run prisma:generate && npm run prod"
+    command: bash -c "npm run prisma:init && npm run prod"
     depends_on:
       - 'db'
 

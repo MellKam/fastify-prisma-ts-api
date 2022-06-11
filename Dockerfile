@@ -6,7 +6,10 @@ RUN npm i -g pnpm
 
 COPY ./package.json ./pnpm-lock.yaml ./
 
-RUN npx pnpm install --frozen-lockfile --ignore-scripts --prod 
+RUN if [ "$NODE_ENV" = "production" ]; \
+    then npx pnpm install --frozen-lockfile --ignore-scripts --prod; \
+    else npx pnpm install --frozen-lockfile --ignore-scripts; \
+    fi 
 
 COPY . .
 

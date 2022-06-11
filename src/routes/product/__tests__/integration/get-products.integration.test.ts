@@ -1,6 +1,7 @@
 import buildApp from '../../../../app';
 import { getFakeProducts } from '../../../../utils/__stubs__/product.stub.js';
 import { getFakeUsers } from '../../../../utils/__stubs__/user.stub.js';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 
 describe('createProduct', () => {
 	let app: Awaited<ReturnType<typeof buildApp>>;

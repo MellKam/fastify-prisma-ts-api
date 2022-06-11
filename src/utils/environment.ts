@@ -4,8 +4,6 @@ export enum NODE_ENV_ENUM {
 	test = 'test',
 }
 
-// export const NODE_ENV_ARRAY = Object.values(NODE_ENV_ENUM);
-
 // derive env file name from process.env.NODE_ENV and process.env.LOCAL
 // process.env.LOCAL must be a boolean type
 export const getEnvFileName = () => {
@@ -13,7 +11,7 @@ export const getEnvFileName = () => {
 		process.env.NODE_ENV
 			? '.' +
 			  process.env.NODE_ENV +
-			  (process.env.LOCAL === 'true' ? '.' + 'local' : '')
+			  (process.env.LOCAL === 'false' ? '' : '.local')
 			: ''
 	}`;
 };
