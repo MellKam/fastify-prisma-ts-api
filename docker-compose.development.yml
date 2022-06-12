@@ -8,16 +8,13 @@ services:
     ports:
       - ${PORT}:${PORT}
     environment:
-      - NODE_ENV=development
-      - PORT=${PORT}
-      - SALT_ROUNDS=${SALT_ROUNDS}
-      - JWT_SECRET=${JWT_SECRET}
       - DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@dev-db:5432/${DB_USER}
+    env_file: .env.development
     volumes:
       - '.:/usr/src/app'
       - '/usr/src/app/node_modules'
     restart: 'unless-stopped'
-    command: bash -c "npx pnpm prisma:generate && npx prisma migrate deploy && npx pnpm dev"
+    command: bash -c "npx pnpm prisma:init && npx pnpm dev"
     depends_on:
       - 'db'
 

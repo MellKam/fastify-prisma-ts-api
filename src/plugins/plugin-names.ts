@@ -5,3 +5,5 @@ export const CORS_PLUGIN = 'corsPlugin';
 export const JWT_PLUGIN = 'jwtPlugin';
 export const JWT_GUARD_PLUGIN = 'jwtGuardPlugin';
 export const AUTH_PLUGIN = 'authPlugin';
+export const GOOGLE_AUTH_PLUGIN = 'googleAuthPlugin';
+export const HTTP_PLUGIN = 'httpPlugin';

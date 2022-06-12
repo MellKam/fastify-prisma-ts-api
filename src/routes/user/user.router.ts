@@ -1,6 +1,6 @@
 import { FastifyPluginCallback } from 'fastify';
 import { UserController } from './user.controller.js';
-import { PUBLIC_USER_SCHEMA } from './user.schema.js';
+import { publicUserRef } from './user.schema.js';
 
 export const userRouter: FastifyPluginCallback = (fastify, _opts, done) => {
 	const userController = new UserController(fastify.userService);
@@ -10,14 +10,14 @@ export const userRouter: FastifyPluginCallback = (fastify, _opts, done) => {
 		url: '/me',
 		schema: {
 			response: {
-				200: {
-					$ref: PUBLIC_USER_SCHEMA,
-				},
+				200: publicUserRef,
 			},
 		},
 		preHandler: fastify.jwtGuard,
 		handler: userController.me,
 	});
+
+	// TODO get user by id
 
 	done();
 };

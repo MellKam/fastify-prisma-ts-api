@@ -9,4 +9,5 @@
 .prettierrc
 .eslintrc.js
 .husky
+coverage
 node_modules

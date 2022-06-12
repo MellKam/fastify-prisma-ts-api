@@ -1,16 +1,21 @@
-import bcrypt from 'bcryptjs';
+import type bcrypt from 'bcryptjs';
 
-interface IHashPasswordResult {
+export type BcryptJs = typeof bcrypt;
+
+interface HashPasswordResult {
 	hash: string;
 	salt: string;
 }
 
 export class HashService {
-	constructor(private readonly saltRounds: number) {}
+	constructor(
+		private readonly bcrypt: BcryptJs,
+		private readonly SALT_ROUNDS: number,
+	) {}
 
-	async hashPassword(password: string): Promise<IHashPasswordResult> {
-		const salt = await bcrypt.genSalt(this.saltRounds);
-		const hash = await bcrypt.hash(password, salt);
+	async hashPassword(password: string): Promise<HashPasswordResult> {
+		const salt = await this.bcrypt.genSalt(this.SALT_ROUNDS);
+		const hash = await this.bcrypt.hash(password, salt);
 
 		return { hash, salt };
 	}
@@ -20,7 +25,7 @@ export class HashService {
 		hash: string,
 		salt: string,
 	): Promise<boolean> {
-		const candidateHash = await bcrypt.hash(candidatePassword, salt);
+		const candidateHash = await this.bcrypt.hash(candidatePassword, salt);
 		return hash === candidateHash;
 	}
 }

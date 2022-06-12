@@ -1,10 +1,11 @@
 import { FastifyPluginCallback } from 'fastify';
-import { PUBLIC_USER_SCHEMA } from '../user/user.schema.js';
+import { publicUserRef } from '../user/user.schema.js';
 import { AuthController } from './auth.controller.js';
 import {
-	LOGIN_USER_REQ_SCHEMA,
-	ACCESS_TOKEN_RES_SCHEMA,
-	REGISTER_USER_REQ_SCHEMA,
+	accessTokenResRef,
+	googleUrlResRef,
+	localLoginReqRef,
+	localRegisterReqRef,
 } from './auth.schema.js';
 
 export const authRouter: FastifyPluginCallback = (fastify, _opts, done) => {
@@ -12,26 +13,26 @@ export const authRouter: FastifyPluginCallback = (fastify, _opts, done) => {
 
 	fastify.route({
 		method: 'POST',
-		url: '/register',
+		url: '/local/register',
 		schema: {
-			body: { $ref: REGISTER_USER_REQ_SCHEMA },
+			body: localRegisterReqRef,
 			response: {
-				201: { $ref: PUBLIC_USER_SCHEMA },
+				201: publicUserRef,
 			},
 		},
-		handler: authController.register,
+		handler: authController.localRegister,
 	});
 
 	fastify.route({
 		method: 'POST',
-		url: '/login',
+		url: '/local/login',
 		schema: {
-			body: { $ref: LOGIN_USER_REQ_SCHEMA },
+			body: localLoginReqRef,
 			response: {
-				200: { $ref: ACCESS_TOKEN_RES_SCHEMA },
+				200: accessTokenResRef,
 			},
 		},
-		handler: authController.login,
+		handler: authController.localLogin,
 	});
 
 	fastify.route({
@@ -39,7 +40,7 @@ export const authRouter: FastifyPluginCallback = (fastify, _opts, done) => {
 		url: '/refresh',
 		schema: {
 			response: {
-				200: { $ref: ACCESS_TOKEN_RES_SCHEMA },
+				200: accessTokenResRef,
 			},
 		},
 		preHandler: fastify.jwtGuard,
@@ -48,9 +49,31 @@ export const authRouter: FastifyPluginCallback = (fastify, _opts, done) => {
 
 	fastify.route({
 		method: 'PATCH',
-		url: '/revoke',
+		url: '/logout',
 		preHandler: fastify.jwtGuard,
-		handler: authController.revokeRefreshToken,
+		handler: authController.logout,
+	});
+
+	fastify.route({
+		method: 'GET',
+		url: '/google/url',
+		schema: {
+			response: {
+				200: googleUrlResRef,
+			},
+		},
+		handler: authController.getGoogleAuthUrl,
+	});
+
+	fastify.route({
+		method: 'GET',
+		url: '/google/callback',
+		schema: {
+			response: {
+				200: accessTokenResRef,
+			},
+		},
+		handler: authController.googleAuthHandler,
 	});
 
 	done();

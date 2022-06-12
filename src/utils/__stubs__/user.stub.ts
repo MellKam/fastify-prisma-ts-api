@@ -17,11 +17,12 @@ export const getFakeUsers = (amount = 1): User[] => {
 			id: randomUUID(),
 			email: faker.internet.email(),
 			name: faker.internet.userName(),
-			password: faker.internet.password(),
-			salt: faker.internet.password(),
 			createdAt: faker.datatype.datetime(),
 			updatedAt: faker.datatype.datetime(),
 			tokenVersion: 0,
+			googleSub: null,
+			localAuthId: null,
+			locale: faker.locale,
 		});
 	}
 

@@ -1,20 +1,23 @@
 import { ProductService } from '../../product.service';
-import { prismaClientMock } from '../../../../plugins/database/__mocks__/prisma-client.mock';
 import { getFakeProducts } from '../../../../utils/__stubs__/product.stub';
+import { describe, it, vi, expect } from 'vitest';
+import prismaClient from '../../../../plugins/database/prisma-client.js';
+
+vi.mock('../../../../plugins/database/prisma-client.js');
 
 describe('productService unitTests', () => {
-	let productService: ProductService;
+	const productService = new ProductService(prismaClient.product);
 
-	beforeAll(() => {
-		productService = new ProductService(prismaClientMock.product);
-	});
-
-	test('1', async () => {
+	it('must create product', async () => {
 		const product = getFakeProducts(1)[0];
-		prismaClientMock.product.create.mockResolvedValueOnce(product);
-		const createProductSpy = jest.spyOn(prismaClientMock.product, 'create');
+		const createProductSpy = vi
+			.spyOn(prismaClient.product, 'create')
+			.mockResolvedValue(product);
 
-		const createProductData = { title: product.title, price: product.price };
+		const createProductData = {
+			title: product.title,
+			price: product.price,
+		};
 
 		const result = await productService.create(
 			createProductData,

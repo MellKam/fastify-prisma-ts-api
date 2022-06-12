@@ -3,12 +3,12 @@ import {
 	BadRequestError,
 	InternalServerError,
 } from '../../utils/http-errors.js';
-import { ICreateProductReq } from './product.schema.js';
+import { createProductReqType } from './product.schema.js';
 
 export class ProductService {
 	constructor(private readonly productRepository: PrismaClient['product']) {}
 
-	async create(productData: ICreateProductReq, ownerId: string) {
+	async create(productData: createProductReqType, ownerId: string) {
 		try {
 			return await this.productRepository.create({
 				data: { ...productData, ownerId },

@@ -1,15 +1,16 @@
+import { PrismaClient } from '@prisma/client';
 import plugin from 'fastify-plugin';
-import { DB_DECORATOR } from '../decorator-names.js';
 import { DATABASE_PLUGIN } from '../plugin-names.js';
-import prismaClient from './prisma-client.js';
 
 export const databasePlugin = plugin(
 	async (fastify) => {
+		const prismaClient = new PrismaClient();
+
 		await prismaClient.$connect();
 
 		fastify.addHook('onClose', async () => await prismaClient.$disconnect());
 
-		fastify.decorate(DB_DECORATOR, prismaClient);
+		fastify.decorate('db', prismaClient);
 	},
 	{ name: DATABASE_PLUGIN },
 );

@@ -8,16 +8,12 @@ services:
     ports:
       - ${PORT}:${PORT}
     environment:
-      - NODE_ENV=test
-      - PORT=${PORT}
-      - SALT_ROUNDS=${SALT_ROUNDS}
-      - JWT_SECRET=${JWT_SECRET}
       - DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@test-db:5432/${DB_USER}
     volumes:
       - '.:/usr/src/app'
       - '/usr/src/app/node_modules'
     restart: 'unless-stopped'
-    command: bash -c "npx pnpm prisma:generate && npx prisma migrate deploy && ${DOCKER_COMMAND}"
+    command: bash -c "npm run prisma:init && npm run test"
     depends_on:
       - 'db'
 

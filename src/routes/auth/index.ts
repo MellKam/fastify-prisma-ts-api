@@ -12,8 +12,10 @@ import { AuthService } from './auth.service.js';
 const authServiceCallback: FastifyPluginCallback = (fastify, _opts, done) => {
 	const authService = new AuthService(
 		fastify.db.user,
+		fastify.db.localAuthData,
 		fastify.jwtService,
 		fastify.hashService,
+		fastify.googleAuthService,
 	);
 	fastify.decorate(AUTH_SERVICE, authService);
 

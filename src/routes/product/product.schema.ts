@@ -1,55 +1,43 @@
-import { DEFAULT_FILEDS_SCHEMA } from '../../utils/defautl-model-fileds.js';
+import { Type, Static } from '@sinclair/typebox';
+import { Nullable } from '../../utils/typebox.provider.js';
 
-export const CREATE_PRODUCE_REQ_SCHEMA_ID = 'createProductReqSchema';
-export const GET_PRODUCTS_RES_SCHEMA_ID = 'getProductsResSchema';
-export const GET_PRODUCTS_QUERY_SCHEMA = 'getProductsQuerySchema';
-export const PRODUCT_SCHEMA_ID = 'productSchema';
-
-const createProductReqSchema = {
-	$id: CREATE_PRODUCE_REQ_SCHEMA_ID,
-	type: 'object',
-	properties: {
-		title: { type: 'string' },
-		content: { type: 'string', nullable: true },
-		price: { type: 'number' },
+const createProductReqSchema = Type.Object(
+	{
+		title: Type.String(),
+		content: Type.Optional(Type.String()),
+		price: Type.Number(),
 	},
-	required: ['title', 'price'],
-	additionalProperties: false,
-};
-
-const productSchema = {
-	$id: PRODUCT_SCHEMA_ID,
-	type: 'object',
-	allOf: [
-		{ $ref: DEFAULT_FILEDS_SCHEMA },
-		{ $ref: CREATE_PRODUCE_REQ_SCHEMA_ID },
-		{ $ref: '#/definitions/ownerIdProperty' },
-	],
-	definitions: {
-		ownerIdProperty: {
-			properties: {
-				ownerId: { type: 'string' },
-			},
-			required: ['ownerId'],
-		},
+	{
+		$id: 'createProductReqSchema',
+		additionalProperties: false,
 	},
-	additionalProperties: false,
-};
+);
 
-const getProductsResSchema = {
-	$id: GET_PRODUCTS_RES_SCHEMA_ID,
-	type: 'array',
-	items: { $ref: PRODUCT_SCHEMA_ID },
-};
+const productSchema = Type.Object(
+	{
+		id: Type.String({ format: 'uuid' }),
+		createdAt: Type.String({ format: 'date-time' }),
+		updatedAt: Type.String({ format: 'date-time' }),
+		title: Type.String(),
+		content: Nullable(Type.String()),
+		price: Type.Number(),
+		ownerId: Type.String({ format: 'uuid' }),
+	},
+	{ $id: 'productSchema', additionalProperties: false },
+);
 
-export interface ICreateProductReq {
-	title: string;
-	content?: string;
-	price: number;
-}
+export const productRef = Type.Ref(productSchema);
+
+const productsArraySchema = Type.Array(productRef, {
+	$id: 'productsArraySchema',
+});
+
+export const createProductReqRef = Type.Ref(createProductReqSchema);
+export type createProductReqType = Static<typeof createProductReqSchema>;
+export const productsArrayRef = Type.Ref(productsArraySchema);
 
 export const productSchemas = [
 	productSchema,
 	createProductReqSchema,
-	getProductsResSchema,
+	productsArraySchema,
 ];

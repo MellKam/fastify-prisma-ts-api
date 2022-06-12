@@ -1,9 +1,10 @@
+import { Type } from '@sinclair/typebox';
 import { FastifyPluginCallback } from 'fastify';
 import { ProductController } from './product.controller.js';
 import {
-	CREATE_PRODUCE_REQ_SCHEMA_ID,
-	GET_PRODUCTS_RES_SCHEMA_ID,
-	PRODUCT_SCHEMA_ID,
+	createProductReqRef,
+	productRef,
+	productsArrayRef,
 } from './product.schema.js';
 
 export const productRouter: FastifyPluginCallback = (fastify, _opts, done) => {
@@ -13,9 +14,9 @@ export const productRouter: FastifyPluginCallback = (fastify, _opts, done) => {
 		method: 'POST',
 		url: '/',
 		schema: {
-			body: { $ref: CREATE_PRODUCE_REQ_SCHEMA_ID },
+			body: createProductReqRef,
 			response: {
-				201: { $ref: PRODUCT_SCHEMA_ID },
+				201: productRef,
 			},
 		},
 		preHandler: fastify.jwtGuard,
@@ -27,13 +28,12 @@ export const productRouter: FastifyPluginCallback = (fastify, _opts, done) => {
 		url: '/:id',
 		schema: {
 			response: {
-				200: { $ref: PRODUCT_SCHEMA_ID },
+				200: productRef,
 			},
-			params: {
-				properties: {
-					id: { type: 'string' },
-				},
-			},
+			params: Type.Object(
+				{ id: Type.String({ format: 'uuid' }) },
+				{ additionalProperties: false },
+			),
 		},
 		handler: productController.findOne,
 	});
@@ -42,11 +42,10 @@ export const productRouter: FastifyPluginCallback = (fastify, _opts, done) => {
 		method: 'DELETE',
 		url: '/:id',
 		schema: {
-			params: {
-				properties: {
-					id: { type: 'string' },
-				},
-			},
+			params: Type.Object(
+				{ id: Type.String({ format: 'uuid' }) },
+				{ additionalProperties: false },
+			),
 		},
 		preHandler: fastify.jwtGuard,
 		handler: productController.deleteOne,
@@ -57,13 +56,12 @@ export const productRouter: FastifyPluginCallback = (fastify, _opts, done) => {
 		url: '/',
 		schema: {
 			response: {
-				200: { $ref: GET_PRODUCTS_RES_SCHEMA_ID },
+				200: productsArrayRef,
 			},
-			querystring: {
-				properties: {
-					ownerId: { type: 'string' },
-				},
-			},
+			querystring: Type.Object(
+				{ ownerId: Type.Optional(Type.String({ format: 'uuid' })) },
+				{ additionalProperties: false },
+			),
 		},
 		handler: productController.findAll,
 	});

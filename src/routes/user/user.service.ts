@@ -7,7 +7,7 @@ import {
 export class UserService {
 	constructor(private readonly userRepository: PrismaClient['user']) {}
 
-	async getUser(id: string) {
+	async getUserById(id: string) {
 		try {
 			const user = await this.userRepository.findUnique({ where: { id } });
 

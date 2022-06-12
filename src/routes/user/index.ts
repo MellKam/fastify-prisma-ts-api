@@ -6,8 +6,7 @@ import { userRouter } from './user.router.js';
 import { UserService } from './user.service.js';
 
 const userServiceCallback: FastifyPluginCallback = (fastify, _opts, done) => {
-	const userService = new UserService(fastify.db.user);
-	fastify.decorate(USER_SERVICE, userService);
+	fastify.decorate(USER_SERVICE, new UserService(fastify.db.user));
 
 	done();
 };
@@ -17,15 +16,11 @@ export const userServicePlugin = plugin(userServiceCallback, {
 	dependencies: [DATABASE_PLUGIN],
 });
 
-const userRouteCallback: FastifyPluginCallback<{ prefix: string }> = (
-	fastify,
-	opts,
-	done,
-) => {
-	fastify.register(userRouter, { prefix: opts.prefix });
-	done();
-};
-
-export const userRoutePlugin = plugin(userRouteCallback, {
-	dependencies: [USER_SERVICE],
-});
+export const userRoutePlugin = plugin<{ prefix: string }>(
+	async (fastify, opts) => {
+		await fastify.register(userRouter, { prefix: opts.prefix });
+	},
+	{
+		dependencies: [USER_SERVICE],
+	},
+);
