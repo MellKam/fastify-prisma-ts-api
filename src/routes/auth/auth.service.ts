@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { GoogleAuthService } from '../../plugins/auth/google/google-auth.service.js';
 import { GoogleUserInfo } from '../../plugins/auth/google/google-auth.types.js';
 import {
-	IRefreshTokenPayload,
+	RefreshTokenPayload,
 	JwtService,
 } from '../../plugins/auth/jwt/jwt.service.js';
 import { HashService } from '../../plugins/hash/hash.service.js';
@@ -101,7 +101,7 @@ export class AuthService {
 	async refreshAccessToken(refreshToken: string) {
 		try {
 			const refreshTokenPayload =
-				this.jwtService.verifyToken<IRefreshTokenPayload>(refreshToken);
+				this.jwtService.verifyToken<RefreshTokenPayload>(refreshToken);
 			if (refreshTokenPayload === null) {
 				return new UnauthorizedError('Invalid refresh token');
 			}

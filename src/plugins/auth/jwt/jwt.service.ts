@@ -2,12 +2,12 @@ import type jwt from 'jsonwebtoken';
 
 type JsonWebToken = typeof jwt;
 
-export interface IRefreshTokenPayload {
+export interface RefreshTokenPayload {
 	userId: string;
 	tokenVersion: number;
 }
 
-export interface IAccessTokenPayload {
+export interface AccessTokenPayload {
 	userId: string;
 }
 
@@ -23,13 +23,13 @@ export class JwtService {
 		private readonly config: JwtServiceConfig,
 	) {}
 
-	generateRefreshToken(payload: IRefreshTokenPayload) {
+	generateRefreshToken(payload: RefreshTokenPayload) {
 		return this.jwt.sign(payload, this.config.JWT_SECRET, {
 			expiresIn: this.config.REFRESH_TOKEN_EXPIRES_TIME,
 		});
 	}
 
-	generateAccessToken(payload: IAccessTokenPayload) {
+	generateAccessToken(payload: AccessTokenPayload) {
 		return this.jwt.sign(payload, this.config.JWT_SECRET, {
 			expiresIn: this.config.ACCESS_TOKEN_EXPIRES_TIME,
 		});

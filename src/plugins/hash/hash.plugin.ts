@@ -5,9 +5,11 @@ import { CONFIG_PLUGIN, HASH_PLUGIN } from '../plugin-names.js';
 import bcrypt from 'bcryptjs';
 
 const hashPluginCallback: FastifyPluginCallback = (fastyfy, _opts, done) => {
-	const hashService = new HashService(bcrypt, fastyfy.config.SALT_ROUNDS);
+	fastyfy.decorate(
+		'hashService',
+		new HashService(bcrypt, fastyfy.config.SALT_ROUNDS),
+	);
 
-	fastyfy.decorate('hashService', hashService);
 	done();
 };
 

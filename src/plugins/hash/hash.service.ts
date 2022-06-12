@@ -2,7 +2,7 @@ import type bcrypt from 'bcryptjs';
 
 export type BcryptJs = typeof bcrypt;
 
-interface IHashPasswordResult {
+interface HashPasswordResult {
 	hash: string;
 	salt: string;
 }
@@ -13,7 +13,7 @@ export class HashService {
 		private readonly SALT_ROUNDS: number,
 	) {}
 
-	async hashPassword(password: string): Promise<IHashPasswordResult> {
+	async hashPassword(password: string): Promise<HashPasswordResult> {
 		const salt = await this.bcrypt.genSalt(this.SALT_ROUNDS);
 		const hash = await this.bcrypt.hash(password, salt);
 

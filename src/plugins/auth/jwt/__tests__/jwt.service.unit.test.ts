@@ -1,12 +1,14 @@
 import jwt from 'jsonwebtoken';
 import {
-	IAccessTokenPayload,
-	IRefreshTokenPayload,
+	AccessTokenPayload,
+	RefreshTokenPayload,
 	JwtService,
 } from '../jwt.service.js';
 import { getRandomHash } from '../../../../utils/__stubs__/hash.stub.js';
 import { faker } from '@faker-js/faker';
 import { describe, vi, expect, it, beforeEach } from 'vitest';
+
+vi.mock('jsonwebtoken');
 
 describe('JwtService', () => {
 	const ACCESS_TOKEN_EXPIRES_TIME = '15m';
@@ -27,7 +29,7 @@ describe('JwtService', () => {
 	describe('generateRefreshToken', () => {
 		it('must call jwt.sign and return token', () => {
 			jwt.sign = vi.fn().mockReturnValue(token);
-			const payload: IRefreshTokenPayload = { tokenVersion: 0, userId: 'id' };
+			const payload: RefreshTokenPayload = { tokenVersion: 0, userId: 'id' };
 
 			const refreshToken = jwtService.generateRefreshToken(payload);
 
@@ -71,17 +73,51 @@ describe('JwtService', () => {
 	});
 
 	describe('generateAccessToken', () => {
-		it('must call ', () => {
+		it('must call jwt.sign and return token', () => {
 			jwt.sign = vi.fn().mockReturnValue(token);
-			const payload: IAccessTokenPayload = { userId: 'id' };
+			const payload: AccessTokenPayload = { userId: 'id' };
 
 			const accessToken = jwtService.generateAccessToken(payload);
 
 			expect(jwt.sign).toBeCalledWith(payload, JWT_SECRET, {
 				expiresIn: ACCESS_TOKEN_EXPIRES_TIME,
 			});
-
 			expect(accessToken).toBe(token);
+		});
+	});
+
+	describe('verifyToken', () => {
+		it('must call jwt.verify and return payload', () => {
+			const accessTokenPayload: AccessTokenPayload = { userId: 'id' };
+			jwt.verify = vi.fn().mockReturnValue(accessTokenPayload);
+
+			const payload = jwtService.verifyToken(token);
+
+			expect(jwt.verify).toBeCalledWith(token, JWT_SECRET);
+			expect(payload).toEqual(accessTokenPayload);
+		});
+
+		it('must call jwt.verify and return null', () => {
+			jwt.verify = vi.fn().mockImplementation(() => {
+				throw new Error();
+			});
+
+			const payload = jwtService.verifyToken(token);
+
+			expect(jwt.verify).toBeCalledWith(token, JWT_SECRET);
+			expect(payload).toEqual(null);
+		});
+	});
+
+	describe('decodeToken', () => {
+		it('must call jwt.decode and return payload', () => {
+			const accessTokenPayload: AccessTokenPayload = { userId: 'id' };
+			jwt.decode = vi.fn().mockReturnValue(accessTokenPayload);
+
+			const payload = jwtService.decodeToken(token);
+
+			expect(jwt.decode).toBeCalledWith(token);
+			expect(payload).toEqual(accessTokenPayload);
 		});
 	});
 });

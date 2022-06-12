@@ -1,9 +1,5 @@
 import { isProductionEnv } from './environment.js';
 
-export interface ErrorWithMessage {
-	message: string;
-}
-
 enum ErrorStatusCode {
 	BAD_REQUEST = 400,
 	UNAUTHORIZED = 401,

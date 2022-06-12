@@ -4,10 +4,7 @@ import cookiePlugin from '@fastify/cookie';
 import { isProductionEnv } from './utils/environment.js';
 import { HttpError, InternalServerError } from './utils/http-errors.js';
 import { apiSchemas, apiRouter } from './routes/api.js';
-import {
-	ajvTypeBoxPlugin,
-	TypeBoxTypeProvider,
-} from './utils/typebox.provider.js';
+import { ajvTypeBoxPlugin } from './utils/typebox.provider.js';
 
 export default async function buildApp() {
 	const app = fastify({
@@ -28,7 +25,7 @@ export default async function buildApp() {
 						},
 				  },
 		},
-	}).withTypeProvider<TypeBoxTypeProvider>();
+	});
 
 	await app.register(plugins.configPlugin);
 	await app.register(plugins.databasePlugin);
@@ -61,6 +58,7 @@ export default async function buildApp() {
 		return reply.send(new InternalServerError());
 	});
 
+	// app.log.info(config, 'Server config');
 	// app.log.info(app.printRoutes({ commonPrefix: false }));
 	// app.log.info(app.printPlugins());
 

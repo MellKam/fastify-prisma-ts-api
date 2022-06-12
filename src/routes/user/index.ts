@@ -6,8 +6,7 @@ import { userRouter } from './user.router.js';
 import { UserService } from './user.service.js';
 
 const userServiceCallback: FastifyPluginCallback = (fastify, _opts, done) => {
-	const userService = new UserService(fastify.db.user);
-	fastify.decorate(USER_SERVICE, userService);
+	fastify.decorate(USER_SERVICE, new UserService(fastify.db.user));
 
 	done();
 };

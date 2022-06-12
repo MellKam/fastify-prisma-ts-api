@@ -1,7 +1,8 @@
 import { AxiosInstance } from 'axios';
-import { HttpError } from '../../../utils/http-errors.js';
+import { HttpError, InternalServerError } from '../../../utils/http-errors.js';
 import {
 	GoogleAuthUriOptions,
+	GoogleTokenUriRequestOptions,
 	GoogleTokenUriResponse,
 } from './google-auth.types.js';
 
@@ -42,30 +43,35 @@ export class GoogleAuthService {
 	}
 
 	async verifyUserCode(code: string) {
-		const options = new URLSearchParams({
+		const options: GoogleTokenUriRequestOptions = {
 			code,
 			client_id: this.config.GOOGLE_OAUTH_CLIENT_ID,
 			client_secret: this.config.GOOGLE_OAUTH_CLIENT_SECRET,
 			redirect_uri: this.config.GOOGLE_OAUTH_REDIRECT_URI,
 			grant_type: 'authorization_code',
-		});
+		};
 
 		try {
 			const response = await this.axios.post<GoogleTokenUriResponse>(
 				this.TOKEN_URI,
-				options.toString(),
+				new URLSearchParams(
+					options as Record<keyof GoogleTokenUriRequestOptions, string>,
+				).toString(),
 				{
 					headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 				},
 			);
 			return response.data;
 		} catch (error: any) {
-			throw new HttpError(
-				`Cannot get response from ${this.TOKEN_URI}, error: ${JSON.stringify(
-					error.response?.data,
-				)}`,
-				error.response?.status || 500,
-			);
+			if (error.response) {
+				throw new HttpError(
+					`Cannot get response from ${this.TOKEN_URI}, error: ${JSON.stringify(
+						error.response.data,
+					)}`,
+					error.response.status,
+				);
+			}
+			throw new InternalServerError(error.message);
 		}
 	}
 }

@@ -12,12 +12,10 @@ const googleAuthPluginCallback: FastifyPluginCallback = (
 	_opts,
 	done,
 ) => {
-	const googleAuthService = new GoogleAuthService(
-		fastify.axios,
-		fastify.config,
+	fastify.decorate(
+		'googleAuthService',
+		new GoogleAuthService(fastify.axios, fastify.config),
 	);
-
-	fastify.decorate('googleAuthService', googleAuthService);
 
 	done();
 };

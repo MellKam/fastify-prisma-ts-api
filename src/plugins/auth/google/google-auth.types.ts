@@ -26,3 +26,13 @@ export interface GoogleUserInfo {
 	locale: string;
 	exp: number;
 }
+
+export type GrantType = 'authorization_code';
+
+export interface GoogleTokenUriRequestOptions {
+	code: string;
+	client_id: string;
+	client_secret: string;
+	redirect_uri: string;
+	grant_type: GrantType;
+}

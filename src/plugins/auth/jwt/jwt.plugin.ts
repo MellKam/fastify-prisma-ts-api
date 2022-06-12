@@ -5,9 +5,7 @@ import { JWT_PLUGIN, CONFIG_PLUGIN } from '../../plugin-names.js';
 import jwt from 'jsonwebtoken';
 
 const jwtPluginCallback: FastifyPluginCallback = (fastify, _opts, done) => {
-	const jwtService = new JwtService(jwt, fastify.config);
-
-	fastify.decorate('jwtService', jwtService);
+	fastify.decorate('jwtService', new JwtService(jwt, fastify.config));
 
 	done();
 };

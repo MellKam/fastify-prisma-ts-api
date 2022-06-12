@@ -7,35 +7,23 @@ import { AppConfig, configSchema } from './config.schema.js';
 import Ajv from 'ajv';
 import ajvFormats from 'ajv-formats';
 
-const pluginCallback: FastifyPluginCallback<{ logConfig: boolean }> = (
-	fastify,
-	opts,
-	done,
-) => {
-	try {
-		const config = envSchema<AppConfig>({
-			dotenv: { path: getEnvFileName() },
-			schema: configSchema,
-			ajv: ajvFormats(
-				new Ajv({
-					allErrors: true,
-					removeAdditional: true,
-					useDefaults: true,
-					coerceTypes: true,
-				}),
-			),
-		});
+const pluginCallback: FastifyPluginCallback = (fastify, _opts, done) => {
+	const config = envSchema<AppConfig>({
+		dotenv: { path: getEnvFileName() },
+		schema: configSchema,
+		ajv: ajvFormats(
+			new Ajv({
+				allErrors: true,
+				removeAdditional: true,
+				useDefaults: true,
+				coerceTypes: true,
+			}),
+		),
+	});
 
-		fastify.decorate('config', config);
+	fastify.decorate('config', config);
 
-		if (opts.logConfig) {
-			fastify.log.info(config, 'Server config');
-		}
-
-		done();
-	} catch (error: any) {
-		done(error);
-	}
+	done();
 };
 
 export const configPlugin = plugin(pluginCallback, { name: CONFIG_PLUGIN });

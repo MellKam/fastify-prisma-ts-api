@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { preHandlerHookHandler } from 'fastify/types/hooks';
 import { GoogleAuthService } from './auth/google/google-auth.service.js';
-import { IAccessTokenPayload, JwtService } from './auth/jwt/jwt.service.js';
+import { AccessTokenPayload, JwtService } from './auth/jwt/jwt.service.js';
 import { HashService } from './hash/hash.service.js';
 import { AxiosInstance } from 'axios';
 import { AppConfig } from './config/config.schema.js';
@@ -17,6 +17,6 @@ declare module 'fastify' {
 		axios: AxiosInstance;
 	}
 	export interface FastifyRequest {
-		auth: IAccessTokenPayload | null;
+		auth: AccessTokenPayload | null;
 	}
 }
