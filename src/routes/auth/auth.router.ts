@@ -76,5 +76,16 @@ export const authRouter: FastifyPluginCallback = (fastify, _opts, done) => {
 		handler: authController.googleAuthHandler,
 	});
 
+	fastify.route({
+		method: 'GET',
+		url: '/activation',
+		schema: {
+			querystring: { type: 'object', properties: { code: { type: 'string' } } },
+		},
+		handler: authController.activateAccount,
+	});
+
+	// TODO resend activation mail
+
 	done();
 };

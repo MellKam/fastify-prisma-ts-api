@@ -1,16 +1,14 @@
-import { PrismaClient } from '@prisma/client';
 import plugin from 'fastify-plugin';
 import { DATABASE_PLUGIN } from '../plugin-names.js';
+import { prismaPlugin } from './prisma/prisma.plugin.js';
+import { redisPlugin } from './redis/redis.plugin.js';
 
 export const databasePlugin = plugin(
 	async (fastify) => {
-		const prismaClient = new PrismaClient();
-
-		await prismaClient.$connect();
-
-		fastify.addHook('onClose', async () => await prismaClient.$disconnect());
-
-		fastify.decorate('db', prismaClient);
+		await fastify.register(prismaPlugin);
+		await fastify.register(redisPlugin);
 	},
-	{ name: DATABASE_PLUGIN },
+	{
+		name: DATABASE_PLUGIN,
+	},
 );

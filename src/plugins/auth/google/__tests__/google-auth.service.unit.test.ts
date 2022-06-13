@@ -9,6 +9,7 @@ import { getRandomHash } from '../../../../utils/__stubs__/hash.stub.js';
 import { LikeAxiosError } from '../../../../utils/__stubs__/like-axios-error.js';
 import { GoogleAuthService } from '../google-auth.service.js';
 import {
+	GoogleAuthScope,
 	GoogleAuthUriOptions,
 	GoogleTokenUriRequestOptions,
 	GoogleUserInfo,
@@ -36,7 +37,10 @@ describe('GoogleAuthService', () => {
 				access_type: 'offline',
 				response_type: 'code',
 				prompt: 'consent',
-				scope: [jwtService.SCOPE_EMAIL, jwtService.SCOPE_PROFILE].join(' '),
+				scope: [
+					GoogleAuthScope.USER_INFO_EMAIL,
+					GoogleAuthScope.USER_INFO_PROFILE,
+				].join(' '),
 			} as GoogleAuthUriOptions);
 		});
 	});

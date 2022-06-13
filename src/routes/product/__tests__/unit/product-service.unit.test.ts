@@ -1,9 +1,9 @@
 import { ProductService } from '../../product.service';
 import { getFakeProducts } from '../../../../utils/__stubs__/product.stub';
 import { describe, it, vi, expect } from 'vitest';
-import prismaClient from '../../../../plugins/database/prisma-client.js';
+import prismaClient from '../../../../plugins/database/prisma/prisma-client.js';
 
-vi.mock('../../../../plugins/database/prisma-client.js');
+vi.mock('../../../../plugins/database/prisma/prisma-client.js');
 
 describe('productService unitTests', () => {
 	const productService = new ProductService(prismaClient.product);

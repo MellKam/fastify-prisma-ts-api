@@ -7,3 +7,4 @@ export const JWT_GUARD_PLUGIN = 'jwtGuardPlugin';
 export const AUTH_PLUGIN = 'authPlugin';
 export const GOOGLE_AUTH_PLUGIN = 'googleAuthPlugin';
 export const HTTP_PLUGIN = 'httpPlugin';
+export const MAIL_PLUGIN = 'mailPlugin';

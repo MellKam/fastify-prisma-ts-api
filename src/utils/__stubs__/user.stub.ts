@@ -23,6 +23,7 @@ export const getFakeUsers = (amount = 1): User[] => {
 			googleSub: null,
 			localAuthId: null,
 			locale: faker.locale,
+			isActiveted: false,
 		});
 	}
 

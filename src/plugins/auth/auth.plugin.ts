@@ -5,7 +5,7 @@ import { jwtGuardPlugin } from './jwt/jwt.guard.plugin.js';
 import { googleAuthPlugin } from './google/google-auth.plugin.js';
 
 export const authPlugin = plugin(
-	async (fastify, _opts) => {
+	async (fastify) => {
 		await fastify.register(jwtPlugin);
 		await fastify.register(jwtGuardPlugin);
 		await fastify.register(googleAuthPlugin);

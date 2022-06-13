@@ -4,7 +4,7 @@ const bootstrap = async () => {
 	try {
 		const app = await buildApp();
 
-		await app.listen({ port: app.config.PORT, host: '0.0.0.0' });
+		await app.listen({ port: app.config.PORT, host: app.config.HOST });
 	} catch (error) {
 		console.error(error);
 		process.exit(1);

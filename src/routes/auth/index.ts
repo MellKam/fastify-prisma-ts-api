@@ -10,15 +10,22 @@ import { authRouter } from './auth.router.js';
 import { AuthService } from './auth.service.js';
 
 const authServiceCallback: FastifyPluginCallback = (fastify, _opts, done) => {
-	const authService = new AuthService(
-		fastify.db.user,
-		fastify.db.localAuthData,
-		fastify.jwtService,
-		fastify.hashService,
-		fastify.googleAuthService,
-	);
-	fastify.decorate(AUTH_SERVICE, authService);
+	const ACTIVATION_PATH = `${fastify.config.SSL ? 'https' : 'http'}://${
+		fastify.config.HOST
+	}:${fastify.config.PORT}/api/auth/activation`;
 
+	const authService = new AuthService({
+		userRepository: fastify.prisma.user,
+		localAuthRepository: fastify.prisma.localAuthData,
+		googleAuthService: fastify.googleAuthService,
+		hashService: fastify.hashService,
+		jwtService: fastify.jwtService,
+		transporter: fastify.transporter,
+		ACTIVATION_PATH,
+		redis: fastify.redis,
+	});
+
+	fastify.decorate(AUTH_SERVICE, authService);
 	done();
 };
 
@@ -27,15 +34,10 @@ export const authServicePlugin = plugin(authServiceCallback, {
 	dependencies: [AUTH_PLUGIN, HASH_PLUGIN, DATABASE_PLUGIN],
 });
 
-const authRouteCallback: FastifyPluginCallback<{ prefix: string }> = (
-	fastify,
-	opts,
-	done,
-) => {
-	fastify.register(authRouter, { prefix: opts.prefix });
-	done();
-};
-
-export const authRoutePlugin = plugin(authRouteCallback, {
-	dependencies: [AUTH_SERVICE],
-});
+export const authRoutePlugin = plugin<{ prefix: string }>(
+	async (fastify, opts) =>
+		await fastify.register(authRouter, { prefix: opts.prefix }),
+	{
+		dependencies: [AUTH_SERVICE],
+	},
+);

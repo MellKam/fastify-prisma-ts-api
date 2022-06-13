@@ -4,3 +4,4 @@ export * from './hash/hash.plugin.js';
 export * from './cors/cors.plugin.js';
 export * from './auth/auth.plugin.js';
 export * from './http/http.plugin.js';
+export * from './email/email.plugin.js';

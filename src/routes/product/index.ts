@@ -10,7 +10,7 @@ const productServiceCallback: FastifyPluginCallback = (
 	_opts,
 	done,
 ) => {
-	fastify.decorate(PRODUCT_SERVICE, new ProductService(fastify.db.product));
+	fastify.decorate(PRODUCT_SERVICE, new ProductService(fastify.prisma.product));
 
 	done();
 };
