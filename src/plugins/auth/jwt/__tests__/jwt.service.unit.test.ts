@@ -47,6 +47,7 @@ describe('JwtService', () => {
 			const tokenVersion = faker.datatype.number();
 			const accessToken = getRandomHash();
 			const refreshToken = getRandomHash();
+			const isActivated = faker.datatype.boolean();
 
 			const generateAccessTokenSpy = vi
 				.spyOn(jwtService, 'generateAccessToken')
@@ -56,9 +57,13 @@ describe('JwtService', () => {
 				.spyOn(jwtService, 'generateRefreshToken')
 				.mockReturnValue(refreshToken);
 
-			const result = jwtService.generateKeyPair(userId, tokenVersion);
+			const result = jwtService.generateKeyPair({
+				isActivated,
+				tokenVersion,
+				userId,
+			});
 
-			expect(generateAccessTokenSpy).toBeCalledWith({ userId });
+			expect(generateAccessTokenSpy).toBeCalledWith({ userId, isActivated });
 			expect(generateRefreshTokenSpy).toBeCalledWith({
 				userId,
 				tokenVersion,
@@ -75,7 +80,7 @@ describe('JwtService', () => {
 	describe('generateAccessToken', () => {
 		it('must call jwt.sign and return token', () => {
 			jwt.sign = vi.fn().mockReturnValue(token);
-			const payload: AccessTokenPayload = { userId: 'id' };
+			const payload: AccessTokenPayload = { userId: 'id', isActivated: true };
 
 			const accessToken = jwtService.generateAccessToken(payload);
 
@@ -88,7 +93,10 @@ describe('JwtService', () => {
 
 	describe('verifyToken', () => {
 		it('must call jwt.verify and return payload', () => {
-			const accessTokenPayload: AccessTokenPayload = { userId: 'id' };
+			const accessTokenPayload: AccessTokenPayload = {
+				userId: 'id',
+				isActivated: true,
+			};
 			jwt.verify = vi.fn().mockReturnValue(accessTokenPayload);
 
 			const payload = jwtService.verifyToken(token);
@@ -111,7 +119,10 @@ describe('JwtService', () => {
 
 	describe('decodeToken', () => {
 		it('must call jwt.decode and return payload', () => {
-			const accessTokenPayload: AccessTokenPayload = { userId: 'id' };
+			const accessTokenPayload: AccessTokenPayload = {
+				userId: 'id',
+				isActivated: true,
+			};
 			jwt.decode = vi.fn().mockReturnValue(accessTokenPayload);
 
 			const payload = jwtService.decodeToken(token);

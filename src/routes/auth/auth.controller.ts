@@ -1,20 +1,21 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { BadRequestError, UnauthorizedError } from '../../utils/http-errors.js';
 import { localLoginReqType, localRegisterReqType } from './auth.schema.js';
-import { AuthService } from './auth.service.js';
+import { AuthAppService } from './services/auth.app.service.js';
 
 const REFRESH_TOKEN = 'refresh_token';
 const REFRESH_TOKEN_ALLOWED_PATH = '/api/auth/refresh';
 
 export class AuthController {
-	constructor(private readonly authService: AuthService) {}
+	constructor(private readonly authAppService: AuthAppService) {}
 
 	async localRegister(
 		req: FastifyRequest<{ Body: localRegisterReqType }>,
 		reply: FastifyReply,
 	) {
 		try {
-			const result = await this.authService.localRegister(req.body);
+			const result =
+				await this.authAppService.localAuthAppService.localRegister(req.body);
 
 			return reply.status(201).send(result);
 		} catch (error) {
@@ -27,7 +28,9 @@ export class AuthController {
 		reply: FastifyReply,
 	) {
 		try {
-			const result = await this.authService.localLogin(req.body);
+			const result = await this.authAppService.localAuthAppService.localLogin(
+				req.body,
+			);
 
 			reply.setCookie(REFRESH_TOKEN, result.refreshToken, {
 				path: REFRESH_TOKEN_ALLOWED_PATH,
@@ -42,7 +45,10 @@ export class AuthController {
 	async refreshAccessToken(req: FastifyRequest, reply: FastifyReply) {
 		try {
 			const refreshToken = req.cookies[REFRESH_TOKEN];
-			const result = await this.authService.refreshAccessToken(refreshToken);
+			const result =
+				await this.authAppService.jwtAuthAppService.refreshAccessToken(
+					refreshToken,
+				);
 
 			return reply.status(200).send({ accessToken: result });
 		} catch (error) {
@@ -51,7 +57,7 @@ export class AuthController {
 	}
 
 	getGoogleAuthUrl(_req: FastifyRequest, reply: FastifyReply) {
-		const url = this.authService.getGoogleAuthUrl();
+		const url = this.authAppService.googleAuthAppService.getGoogleAuthUrl();
 
 		return reply.status(200).send({ url });
 	}
@@ -61,7 +67,10 @@ export class AuthController {
 		reply: FastifyReply,
 	) {
 		try {
-			const result = await this.authService.loginWithGoogle(req.query.code);
+			const result =
+				await this.authAppService.googleAuthAppService.loginWithGoogle(
+					req.query.code,
+				);
 
 			reply.setCookie(REFRESH_TOKEN, result.refreshToken, {
 				path: REFRESH_TOKEN_ALLOWED_PATH,
@@ -77,7 +86,9 @@ export class AuthController {
 		if (req.auth === null)
 			return new UnauthorizedError('You are not authorized');
 
-		const result = await this.authService.logout(req.auth.userId);
+		const result = await this.authAppService.jwtAuthAppService.logout(
+			req.auth.userId,
+		);
 
 		if (result !== undefined) {
 			return reply.send(result);
@@ -91,14 +102,30 @@ export class AuthController {
 		reply: FastifyReply,
 	) {
 		try {
-			const result = await this.authService.activateAccountByCode(
-				req.query.code,
-			);
+			const result =
+				await this.authAppService.activationAuthAppService.activateAccountByCode(
+					req.query.code,
+				);
 			if (!result) {
 				return reply.send(
 					new BadRequestError('User already has activated account'),
 				);
 			}
+
+			return reply.status(204).send();
+		} catch (error) {
+			return reply.send(error);
+		}
+	}
+
+	async resendActivationMail(
+		req: FastifyRequest<{ Body: { email: string } }>,
+		reply: FastifyReply,
+	) {
+		try {
+			await this.authAppService.activationAuthAppService.resendActivationMail(
+				req.body.email,
+			);
 
 			return reply.status(204).send();
 		} catch (error) {

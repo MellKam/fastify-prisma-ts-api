@@ -102,16 +102,15 @@ describe('GoogleAuthService', () => {
 					throw new Error();
 				});
 
-				try {
-					await jwtService.verifyUserCode(code);
-				} catch (error: any) {
-					expect(error).toBeInstanceOf(InternalServerError);
-				}
+				await expect(async () =>
+					jwtService.verifyUserCode(code),
+				).rejects.toBeInstanceOf(InternalServerError);
 			});
 
-			it('must throw internal server error', async () => {
+			it('must throw http error', async () => {
 				const responseData = { error: 'TEST' };
 				const errorStatus = 400;
+
 				axios.post = vi.fn().mockImplementationOnce(async () => {
 					throw new LikeAxiosError('TEST', {
 						data: responseData,

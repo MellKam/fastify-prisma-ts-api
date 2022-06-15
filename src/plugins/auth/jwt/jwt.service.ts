@@ -3,13 +3,16 @@ import type jwt from 'jsonwebtoken';
 type JsonWebToken = typeof jwt;
 
 export interface RefreshTokenPayload {
-	userId: string;
-	tokenVersion: number;
+	readonly userId: string;
+	readonly tokenVersion: number;
 }
 
 export interface AccessTokenPayload {
-	userId: string;
+	readonly userId: string;
+	readonly isActivated: boolean;
 }
+
+interface TokenKeyPairData extends RefreshTokenPayload, AccessTokenPayload {}
 
 interface JwtServiceConfig {
 	readonly JWT_SECRET: string;
@@ -35,9 +38,15 @@ export class JwtService {
 		});
 	}
 
-	generateKeyPair(userId: string, tokenVersion: number) {
-		const refreshToken = this.generateRefreshToken({ userId, tokenVersion });
-		const accessToken = this.generateAccessToken({ userId });
+	generateKeyPair(data: TokenKeyPairData) {
+		const refreshToken = this.generateRefreshToken({
+			userId: data.userId,
+			tokenVersion: data.tokenVersion,
+		});
+		const accessToken = this.generateAccessToken({
+			userId: data.userId,
+			isActivated: data.isActivated,
+		});
 
 		return { refreshToken, accessToken };
 	}

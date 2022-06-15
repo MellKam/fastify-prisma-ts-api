@@ -2,10 +2,10 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { describe, vi, expect, it, afterEach, SpyInstanceFn } from 'vitest';
 import { UnauthorizedError } from '../../../../utils/http-errors.js';
 import { getRandomHash } from '../../../../utils/__stubs__/hash.stub.js';
-import { jwtGuard } from '../jwt.guard.js';
-import { JwtService, AccessTokenPayload } from '../jwt.service.js';
+import { JwtService, AccessTokenPayload } from '../../jwt/jwt.service.js';
+import { loggedUserGuard } from '../logged-user.guard.js';
 
-describe('jwtGuard', () => {
+describe('loggedUserGuard', () => {
 	const doneFnMock = vi.fn();
 	const jwtServiceMock = new JwtService({} as any, {} as any);
 	const fastifyContextMock: Partial<FastifyInstance> = {
@@ -16,7 +16,10 @@ describe('jwtGuard', () => {
 	};
 
 	it('must verify token and assign payload to req.auth', () => {
-		const accessTokenPayload: AccessTokenPayload = { userId: getRandomHash() };
+		const accessTokenPayload: AccessTokenPayload = {
+			userId: getRandomHash(),
+			isActivated: true,
+		};
 		const accessToken = getRandomHash();
 		const fastifyRequest = {
 			headers: { authorization: `Bearer ${accessToken}` },
@@ -24,7 +27,7 @@ describe('jwtGuard', () => {
 
 		vi.spyOn(jwtServiceMock, 'verifyToken').mockReturnValue(accessTokenPayload);
 
-		jwtGuard.apply(fastifyContextMock as FastifyInstance, [
+		loggedUserGuard.apply(fastifyContextMock as FastifyInstance, [
 			fastifyRequest,
 			fastifyReplyMock as FastifyReply,
 			doneFnMock,
@@ -40,7 +43,7 @@ describe('jwtGuard', () => {
 			headers: {},
 		} as FastifyRequest;
 
-		jwtGuard.apply(fastifyContextMock as FastifyInstance, [
+		loggedUserGuard.apply(fastifyContextMock as FastifyInstance, [
 			fastifyRequest,
 			fastifyReplyMock as FastifyReply,
 			doneFnMock,
@@ -61,7 +64,7 @@ describe('jwtGuard', () => {
 
 		vi.spyOn(jwtServiceMock, 'verifyToken').mockReturnValue(null);
 
-		jwtGuard.apply(fastifyContextMock as FastifyInstance, [
+		loggedUserGuard.apply(fastifyContextMock as FastifyInstance, [
 			fastifyRequest,
 			fastifyReplyMock as FastifyReply,
 			doneFnMock,

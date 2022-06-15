@@ -13,7 +13,7 @@ export const userRouter: FastifyPluginCallback = (fastify, _opts, done) => {
 				200: publicUserRef,
 			},
 		},
-		preHandler: fastify.jwtGuard,
+		preHandler: fastify.loggedUserGuard,
 		handler: userController.me,
 	});
 

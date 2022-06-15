@@ -14,7 +14,8 @@ declare module 'fastify' {
 		prisma: PrismaClient;
 		hashService: HashService;
 		jwtService: JwtService;
-		jwtGuard: preHandlerHookHandler;
+		loggedUserGuard: preHandlerHookHandler;
+		activatedUserGuard: preHandlerHookHandler;
 		googleAuthService: GoogleAuthService;
 		axios: AxiosInstance;
 		transporter: Transporter;
