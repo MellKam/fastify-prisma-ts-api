@@ -2,7 +2,8 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { describe, vi, expect, it, afterEach, SpyInstanceFn } from 'vitest';
 import { UnauthorizedError } from '../../../../utils/http-errors.js';
 import { getRandomHash } from '../../../../utils/__stubs__/hash.stub.js';
-import { JwtService, AccessTokenPayload } from '../../jwt/jwt.service.js';
+import { JwtService } from '../../jwt/jwt.service.js';
+import { AccessTokenPayload } from '../../jwt/jwt.types.js';
 import { loggedUserGuard } from '../logged-user.guard.js';
 
 describe('loggedUserGuard', () => {

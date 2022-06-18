@@ -16,7 +16,7 @@ export class ActivationAuthAppService {
 	async resendActivationMail(email: string) {
 		try {
 			const user = await this.deps.userRepository.findFirst({
-				where: { email, isActiveted: false },
+				where: { email, isActivated: false },
 			});
 			if (user === null) {
 				throw new BadRequestError(
@@ -40,8 +40,8 @@ export class ActivationAuthAppService {
 			const email = await this.deps.utils.findUserEmailByCode(code);
 
 			const result = await this.deps.userRepository.updateMany({
-				where: { email, isActiveted: false },
-				data: { isActiveted: true },
+				where: { email, isActivated: false },
+				data: { isActivated: true },
 			});
 
 			return result.count !== 0;

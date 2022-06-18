@@ -1,4 +1,4 @@
-import { PrismaClient, User } from '@prisma/client';
+import { Prisma, PrismaClient, User } from '@prisma/client';
 import { GoogleAuthService } from '../../../plugins/auth/google/google-auth.service.js';
 import { GoogleUserInfo } from '../../../plugins/auth/google/google-auth.types.js';
 import { JwtService } from '../../../plugins/auth/jwt/jwt.service.js';
@@ -26,6 +26,7 @@ export class GoogleAuthAppService {
 		const googleResponse = await this.deps.googleAuthService.verifyUserCode(
 			code,
 		);
+
 		// we trust Google so we can just decode this token
 		const googleUser = this.deps.jwtService.decodeToken<GoogleUserInfo>(
 			googleResponse.id_token,
@@ -64,18 +65,21 @@ export class GoogleAuthAppService {
 				// if user is already registered but does not have a Google auth method
 				// -> Add to user Google auth data
 
+				const data: Prisma.UserUpdateInput = {
+					googleSub: googleUser.sub,
+					// in case the user has not activated an account with local auth
+					isActivated: true,
+					// increment token to login user and revoke latest tokens
+					tokenVersion: { increment: 1 },
+				};
+
+				// 	if user don't have setted this data, then set it from google
+				if (existingUser.locale === null) data.locale = googleUser.locale;
+				if (existingUser.name === null) data.name = googleUser.name;
+
 				user = await this.deps.userRepository.update({
 					where: { id: existingUser.id },
-					data: {
-						googleSub: googleUser.sub,
-						// if user don't have setted this data, then set it from google
-						locale: existingUser.locale ? undefined : googleUser.locale,
-						name: existingUser.name ? undefined : googleUser.name,
-						// in case the user has not activated an account with local auth
-						isActiveted: true,
-						// increment token to login user and revoke latest tokens
-						tokenVersion: { increment: 1 },
-					},
+					data,
 				});
 			} else if (existingUser !== null) {
 				// if user is already registered and has Google auth method
@@ -95,7 +99,7 @@ export class GoogleAuthAppService {
 						locale: googleUser.locale,
 						name: googleUser.name,
 						// when a user register with Google, we can automatically set their account as activated
-						isActiveted: true,
+						isActivated: true,
 						// increment token to login user and revoke latest tokens
 						tokenVersion: 1,
 					},
@@ -103,12 +107,12 @@ export class GoogleAuthAppService {
 			}
 
 			return this.deps.jwtService.generateKeyPair({
-				isActivated: user.isActiveted,
+				isActivated: user.isActivated,
 				tokenVersion: user.tokenVersion,
 				userId: user.id,
 			});
 		} catch (error: any) {
-			if (error.statusCode && error.statusCode !== 500) {
+			if (error.statusCode) {
 				throw error;
 			}
 			throw new InternalServerError(error.message);

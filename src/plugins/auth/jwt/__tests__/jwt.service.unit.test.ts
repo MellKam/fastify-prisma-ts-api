@@ -1,12 +1,9 @@
 import jwt from 'jsonwebtoken';
-import {
-	AccessTokenPayload,
-	RefreshTokenPayload,
-	JwtService,
-} from '../jwt.service.js';
+import { JwtService } from '../jwt.service.js';
 import { getRandomHash } from '../../../../utils/__stubs__/hash.stub.js';
 import { faker } from '@faker-js/faker';
 import { describe, vi, expect, it, beforeEach } from 'vitest';
+import { RefreshTokenPayload, AccessTokenPayload } from '../jwt.types.js';
 
 vi.mock('jsonwebtoken');
 

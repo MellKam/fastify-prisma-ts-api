@@ -101,7 +101,7 @@ export class LocalAuthAppService {
 			});
 
 			return this.deps.jwtService.generateKeyPair({
-				isActivated: user.isActiveted,
+				isActivated: user.isActivated,
 				tokenVersion: user.tokenVersion++,
 				userId: user.id,
 			});

@@ -1,20 +1,29 @@
 import { randomUUID } from 'crypto';
 import ms from 'ms';
+import { Transporter } from 'nodemailer';
 import { RedisClientType } from 'redis';
 import { BadRequestError } from '../../../../utils/http-errors.js';
 import { EmailActivationAuthUtilService } from './email-activation.auth.util.service.js';
 
 export class ActivationAuthUtilService {
+	readonly emailUtils: EmailActivationAuthUtilService;
+
 	constructor(
 		private readonly deps: {
 			readonly redis: RedisClientType;
-			readonly emailUtils: EmailActivationAuthUtilService;
+			readonly transporter: Transporter;
 		},
 		private readonly opts: {
 			readonly ACTIVATION_CODE_REDIS_PREFIX: string;
 			readonly ACTIVATION_CODE_REDIS_TTL: string;
+			readonly ACTIVATION_PATH: string;
 		},
-	) {}
+	) {
+		this.emailUtils = new EmailActivationAuthUtilService(
+			{ transporter: this.deps.transporter },
+			{ ACTIVATION_PATH: this.opts.ACTIVATION_PATH },
+		);
+	}
 
 	/**
 	 * Generate activation code in format of uuid
@@ -45,6 +54,6 @@ export class ActivationAuthUtilService {
 
 	async sendActivationMail(userEmail: string) {
 		const code = await this.genActivationCode(userEmail);
-		this.deps.emailUtils.sendActivationMail(userEmail, code);
+		this.emailUtils.sendActivationMail(userEmail, code);
 	}
 }

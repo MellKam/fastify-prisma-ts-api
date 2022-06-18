@@ -1,6 +1,6 @@
 import { preHandlerHookHandler } from 'fastify/types/hooks.js';
 import { UnauthorizedError } from '../../../utils/http-errors.js';
-import { AccessTokenPayload } from '../jwt/jwt.service.js';
+import { AccessTokenPayload } from '../jwt/jwt.types.js';
 
 // activated and of course logged user
 export const activatedUserGuard: preHandlerHookHandler = function (

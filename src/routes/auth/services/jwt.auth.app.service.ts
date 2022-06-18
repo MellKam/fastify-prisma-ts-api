@@ -1,8 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import {
-	JwtService,
-	RefreshTokenPayload,
-} from '../../../plugins/auth/jwt/jwt.service.js';
+import { JwtService } from '../../../plugins/auth/jwt/jwt.service.js';
+import { RefreshTokenPayload } from '../../../plugins/auth/jwt/jwt.types.js';
 import {
 	UnauthorizedError,
 	InternalServerError,
@@ -33,7 +31,7 @@ export class JwtAuthAppService {
 
 			return this.deps.jwtService.generateAccessToken({
 				userId: user.id,
-				isActivated: user.isActiveted,
+				isActivated: user.isActivated,
 			});
 		} catch (error: any) {
 			throw new InternalServerError(error.message);

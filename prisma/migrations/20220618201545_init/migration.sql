@@ -17,7 +17,7 @@ CREATE TABLE "User" (
     "locale" TEXT,
     "googleSub" TEXT,
     "localAuthId" UUID,
-    "isActiveted" BOOLEAN NOT NULL DEFAULT false,
+    "isActivated" BOOLEAN NOT NULL DEFAULT false,
     "tokenVersion" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")

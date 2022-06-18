@@ -27,7 +27,7 @@ model User {
   googleSub     String?        @unique
   localAuthData LocalAuthData? @relation(fields: [localAuthId], references: [id])
   localAuthId   String?        @unique @db.Uuid
-  isActiveted   Boolean        @default(false)
+  isActivated   Boolean        @default(false)
   tokenVersion  Int            @default(0)
 
   products Product[]
