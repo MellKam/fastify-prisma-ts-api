@@ -1,9 +1,10 @@
 import { AxiosInstance } from 'axios';
 import { HttpError, InternalServerError } from '../../../utils/http-errors.js';
 import {
+	GoogleAuthScope,
 	GoogleAuthUriOptions,
 	GoogleTokenUriRequestOptions,
-	GoogleTokenUriResponse,
+	GoogleTokenGrantAuthCodeResponse,
 } from './google-auth.types.js';
 
 interface GoogleAuthServiceConfig {
@@ -15,10 +16,6 @@ interface GoogleAuthServiceConfig {
 export class GoogleAuthService {
 	private readonly AUTH_URI = 'https://accounts.google.com/o/oauth2/auth';
 	private readonly TOKEN_URI = 'https://oauth2.googleapis.com/token';
-	private readonly SCOPE_PROFILE =
-		'https://www.googleapis.com/auth/userinfo.profile';
-	private readonly SCOPE_EMAIL =
-		'https://www.googleapis.com/auth/userinfo.email';
 
 	private readonly AUTH_URI_OPTIONS: Record<keyof GoogleAuthUriOptions, string>;
 
@@ -32,7 +29,10 @@ export class GoogleAuthService {
 			access_type: 'offline',
 			response_type: 'code',
 			prompt: 'consent',
-			scope: [this.SCOPE_EMAIL, this.SCOPE_PROFILE].join(' '),
+			scope: [
+				GoogleAuthScope.USER_INFO_EMAIL,
+				GoogleAuthScope.USER_INFO_PROFILE,
+			].join(' '),
 		};
 	}
 
@@ -52,7 +52,7 @@ export class GoogleAuthService {
 		};
 
 		try {
-			const response = await this.axios.post<GoogleTokenUriResponse>(
+			const response = await this.axios.post<GoogleTokenGrantAuthCodeResponse>(
 				this.TOKEN_URI,
 				new URLSearchParams(
 					options as Record<keyof GoogleTokenUriRequestOptions, string>,

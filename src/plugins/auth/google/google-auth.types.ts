@@ -7,15 +7,18 @@ export interface GoogleAuthUriOptions {
 	scope: string;
 }
 
-export interface GoogleTokenUriResponse {
+type TokenType = 'Bearer';
+
+export interface GoogleTokenGrantAuthCodeResponse {
 	id_token: string;
 	access_token: string;
 	refresh_token: string;
 	expires_in: number;
-	token_type: string;
+	token_type: TokenType;
 }
 
 export interface GoogleUserInfo {
+	// googleSub is a unique Google Account Id
 	sub: string;
 	email: string;
 	email_verified: boolean;
@@ -27,12 +30,19 @@ export interface GoogleUserInfo {
 	exp: number;
 }
 
-export type GrantType = 'authorization_code';
+export type GrantType = 'authorization_code' | 'refresh_token';
 
 export interface GoogleTokenUriRequestOptions {
-	code: string;
+	code?: string;
+	refresh_token?: string;
 	client_id: string;
 	client_secret: string;
-	redirect_uri: string;
+	redirect_uri?: string;
 	grant_type: GrantType;
+}
+
+export enum GoogleAuthScope {
+	USER_INFO_PROFILE = 'https://www.googleapis.com/auth/userinfo.profile',
+	USER_INFO_EMAIL = 'https://www.googleapis.com/auth/userinfo.email',
+	// MAIL = 'https://mail.google.com/',
 }

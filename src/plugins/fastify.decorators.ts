@@ -5,16 +5,21 @@ import { AccessTokenPayload, JwtService } from './auth/jwt/jwt.service.js';
 import { HashService } from './hash/hash.service.js';
 import { AxiosInstance } from 'axios';
 import { AppConfig } from './config/config.schema.js';
+import { RedisClientType } from 'redis';
+import { Transporter } from 'nodemailer';
 
 declare module 'fastify' {
 	export interface FastifyInstance {
 		config: AppConfig;
-		db: PrismaClient;
+		prisma: PrismaClient;
 		hashService: HashService;
 		jwtService: JwtService;
-		jwtGuard: preHandlerHookHandler;
+		loggedUserGuard: preHandlerHookHandler;
+		activatedUserGuard: preHandlerHookHandler;
 		googleAuthService: GoogleAuthService;
 		axios: AxiosInstance;
+		transporter: Transporter;
+		redis: RedisClientType;
 	}
 	export interface FastifyRequest {
 		auth: AccessTokenPayload | null;

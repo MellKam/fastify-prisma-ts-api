@@ -19,7 +19,7 @@ export const productRouter: FastifyPluginCallback = (fastify, _opts, done) => {
 				201: productRef,
 			},
 		},
-		preHandler: fastify.jwtGuard,
+		preHandler: fastify.activatedUserGuard,
 		handler: productController.create,
 	});
 
@@ -47,7 +47,7 @@ export const productRouter: FastifyPluginCallback = (fastify, _opts, done) => {
 				{ additionalProperties: false },
 			),
 		},
-		preHandler: fastify.jwtGuard,
+		preHandler: fastify.activatedUserGuard,
 		handler: productController.deleteOne,
 	});
 

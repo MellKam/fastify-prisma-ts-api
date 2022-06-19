@@ -9,6 +9,7 @@ import { getRandomHash } from '../../../../utils/__stubs__/hash.stub.js';
 import { LikeAxiosError } from '../../../../utils/__stubs__/like-axios-error.js';
 import { GoogleAuthService } from '../google-auth.service.js';
 import {
+	GoogleAuthScope,
 	GoogleAuthUriOptions,
 	GoogleTokenUriRequestOptions,
 	GoogleUserInfo,
@@ -36,7 +37,10 @@ describe('GoogleAuthService', () => {
 				access_type: 'offline',
 				response_type: 'code',
 				prompt: 'consent',
-				scope: [jwtService.SCOPE_EMAIL, jwtService.SCOPE_PROFILE].join(' '),
+				scope: [
+					GoogleAuthScope.USER_INFO_EMAIL,
+					GoogleAuthScope.USER_INFO_PROFILE,
+				].join(' '),
 			} as GoogleAuthUriOptions);
 		});
 	});
@@ -98,16 +102,15 @@ describe('GoogleAuthService', () => {
 					throw new Error();
 				});
 
-				try {
-					await jwtService.verifyUserCode(code);
-				} catch (error: any) {
-					expect(error).toBeInstanceOf(InternalServerError);
-				}
+				await expect(async () =>
+					jwtService.verifyUserCode(code),
+				).rejects.toBeInstanceOf(InternalServerError);
 			});
 
-			it('must throw internal server error', async () => {
+			it('must throw http error', async () => {
 				const responseData = { error: 'TEST' };
 				const errorStatus = 400;
+
 				axios.post = vi.fn().mockImplementationOnce(async () => {
 					throw new LikeAxiosError('TEST', {
 						data: responseData,

@@ -31,13 +31,14 @@ export default async function buildApp() {
 	await app.register(plugins.databasePlugin);
 	await app.register(plugins.corsPlugin);
 	await app.register(plugins.httpPlugin);
+	await app.register(plugins.hashPlugin);
 
 	await app.register(cookiePlugin, {
 		parseOptions: { httpOnly: true },
 	});
 
-	await app.register(plugins.hashPlugin);
 	await app.register(plugins.authPlugin);
+	await app.register(plugins.mailPlugin);
 
 	for (const schema of apiSchemas) {
 		app.addSchema(schema);

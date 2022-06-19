@@ -43,14 +43,14 @@ export const authRouter: FastifyPluginCallback = (fastify, _opts, done) => {
 				200: accessTokenResRef,
 			},
 		},
-		preHandler: fastify.jwtGuard,
+		preHandler: fastify.loggedUserGuard,
 		handler: authController.refreshAccessToken,
 	});
 
 	fastify.route({
 		method: 'PATCH',
 		url: '/logout',
-		preHandler: fastify.jwtGuard,
+		preHandler: fastify.loggedUserGuard,
 		handler: authController.logout,
 	});
 
@@ -74,6 +74,27 @@ export const authRouter: FastifyPluginCallback = (fastify, _opts, done) => {
 			},
 		},
 		handler: authController.googleAuthHandler,
+	});
+
+	fastify.route({
+		method: 'GET',
+		url: '/activation',
+		schema: {
+			querystring: { type: 'object', properties: { code: { type: 'string' } } },
+		},
+		handler: authController.activateAccount,
+	});
+
+	fastify.route({
+		method: 'POST',
+		url: '/activation',
+		schema: {
+			body: {
+				type: 'object',
+				properties: { email: { type: 'string', format: 'email' } },
+			},
+		},
+		handler: authController.resendActivationMail,
 	});
 
 	done();

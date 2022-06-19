@@ -19,8 +19,8 @@ describe('createProduct', () => {
 		const user = getFakeUsers()[0];
 		const products = getFakeProducts(5, user.id);
 
-		await app.db.user.create({ data: user });
-		await app.db.product.createMany({ data: products });
+		await app.prisma.user.create({ data: user });
+		await app.prisma.product.createMany({ data: products });
 
 		const response = await app.inject({ method: 'GET', url: '/api/product' });
 
@@ -31,8 +31,8 @@ describe('createProduct', () => {
 	});
 
 	afterAll(async () => {
-		await app.db.product.deleteMany({});
-		await app.db.user.deleteMany({});
+		await app.prisma.product.deleteMany({});
+		await app.prisma.user.deleteMany({});
 		await app.close();
 	});
 });

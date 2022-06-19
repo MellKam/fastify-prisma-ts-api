@@ -1,30 +1,48 @@
+import { faker } from '@faker-js/faker';
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { describe, vi, expect, it, afterEach, SpyInstanceFn } from 'vitest';
+import {
+	describe,
+	vi,
+	expect,
+	it,
+	afterEach,
+	SpyInstanceFn,
+	MockedObject,
+} from 'vitest';
 import { UnauthorizedError } from '../../../../utils/http-errors.js';
 import { getRandomHash } from '../../../../utils/__stubs__/hash.stub.js';
-import { jwtGuard } from '../jwt.guard.js';
-import { JwtService, AccessTokenPayload } from '../jwt.service.js';
+import { JwtService } from '../../jwt/jwt.service.js';
+import { AccessTokenPayload } from '../../jwt/jwt.types.js';
+import { loggedUserGuard } from '../logged-user.guard.js';
 
-describe('jwtGuard', () => {
-	const doneFnMock = vi.fn();
-	const jwtServiceMock = new JwtService({} as any, {} as any);
+vi.mock('../../jwt/jwt.service.js');
+
+describe('loggedUserGuard', () => {
+	const jwtService = new JwtService({} as any, {} as any);
+	const jwtServiceMock = jwtService as MockedObject<JwtService>;
+
 	const fastifyContextMock: Partial<FastifyInstance> = {
 		jwtService: jwtServiceMock,
 	};
 	const fastifyReplyMock: Partial<FastifyReply> = {
 		send: vi.fn(),
 	};
+	const doneFnMock = vi.fn();
 
 	it('must verify token and assign payload to req.auth', () => {
-		const accessTokenPayload: AccessTokenPayload = { userId: getRandomHash() };
+		const accessTokenPayload: AccessTokenPayload = {
+			userId: faker.datatype.uuid(),
+			isActivated: faker.datatype.boolean(),
+		};
 		const accessToken = getRandomHash();
 		const fastifyRequest = {
 			headers: { authorization: `Bearer ${accessToken}` },
+			auth: null,
 		} as FastifyRequest;
 
-		vi.spyOn(jwtServiceMock, 'verifyToken').mockReturnValue(accessTokenPayload);
+		jwtServiceMock.verifyToken.mockReturnValue(accessTokenPayload);
 
-		jwtGuard.apply(fastifyContextMock as FastifyInstance, [
+		loggedUserGuard.apply(fastifyContextMock as FastifyInstance, [
 			fastifyRequest,
 			fastifyReplyMock as FastifyReply,
 			doneFnMock,
@@ -38,9 +56,10 @@ describe('jwtGuard', () => {
 	it('must send reply with unauthorized error', () => {
 		const fastifyRequest = {
 			headers: {},
+			auth: null,
 		} as FastifyRequest;
 
-		jwtGuard.apply(fastifyContextMock as FastifyInstance, [
+		loggedUserGuard.apply(fastifyContextMock as FastifyInstance, [
 			fastifyRequest,
 			fastifyReplyMock as FastifyReply,
 			doneFnMock,
@@ -57,11 +76,12 @@ describe('jwtGuard', () => {
 		const accessToken = getRandomHash();
 		const fastifyRequest = {
 			headers: { authorization: `Bearer ${accessToken}` },
+			auth: null,
 		} as FastifyRequest;
 
-		vi.spyOn(jwtServiceMock, 'verifyToken').mockReturnValue(null);
+		jwtServiceMock.verifyToken.mockReturnValue(null);
 
-		jwtGuard.apply(fastifyContextMock as FastifyInstance, [
+		loggedUserGuard.apply(fastifyContextMock as FastifyInstance, [
 			fastifyRequest,
 			fastifyReplyMock as FastifyReply,
 			doneFnMock,

@@ -1,26 +1,20 @@
 import type jwt from 'jsonwebtoken';
+import {
+	RefreshTokenPayload,
+	AccessTokenPayload,
+	TokenKeyPairData,
+} from './jwt.types.js';
 
 type JsonWebToken = typeof jwt;
-
-export interface RefreshTokenPayload {
-	userId: string;
-	tokenVersion: number;
-}
-
-export interface AccessTokenPayload {
-	userId: string;
-}
-
-interface JwtServiceConfig {
-	readonly JWT_SECRET: string;
-	readonly REFRESH_TOKEN_EXPIRES_TIME: string;
-	readonly ACCESS_TOKEN_EXPIRES_TIME: string;
-}
 
 export class JwtService {
 	constructor(
 		private readonly jwt: JsonWebToken,
-		private readonly config: JwtServiceConfig,
+		private readonly config: {
+			readonly JWT_SECRET: string;
+			readonly REFRESH_TOKEN_EXPIRES_TIME: string;
+			readonly ACCESS_TOKEN_EXPIRES_TIME: string;
+		},
 	) {}
 
 	generateRefreshToken(payload: RefreshTokenPayload) {
@@ -35,9 +29,15 @@ export class JwtService {
 		});
 	}
 
-	generateKeyPair(userId: string, tokenVersion: number) {
-		const refreshToken = this.generateRefreshToken({ userId, tokenVersion });
-		const accessToken = this.generateAccessToken({ userId });
+	generateKeyPair(data: TokenKeyPairData) {
+		const refreshToken = this.generateRefreshToken({
+			userId: data.userId,
+			tokenVersion: data.tokenVersion,
+		});
+		const accessToken = this.generateAccessToken({
+			userId: data.userId,
+			isActivated: data.isActivated,
+		});
 
 		return { refreshToken, accessToken };
 	}
