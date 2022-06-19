@@ -5,5 +5,6 @@ export const JwtService = vi.fn(
 	(): Partial<JwtServiceType> => ({
 		decodeToken: vi.fn(),
 		generateKeyPair: vi.fn(),
+		verifyToken: vi.fn(),
 	}),
 );
